@@ -1,0 +1,5 @@
+ansible_user: "oscar"
+ansible_password: "henry"
+ansible_connection: network_cli
+ansible_network_os: ios
+napalm_platform: ios
