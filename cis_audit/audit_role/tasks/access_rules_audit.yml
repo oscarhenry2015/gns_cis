@@ -1,0 +1,108 @@
+---
+- name: Register output of 'show run | include privilege'
+  cisco.ios.ios_command:
+    commands:
+      - show run | include privilege
+  register: user_privilege_output
+
+- name: Score 1.2.1 Set 'privilege 1' for local users
+  set_fact:
+    privilege_user_score: "{{ 0 if 'username' in user_privilege_output.stdout[0] else 1 }}"
+
+- name: Register output of 'show running-config | include transport input'
+  cisco.ios.ios_command:
+    commands: 
+      show running-config | include transport input ssh
+  register: config_output
+
+- name: Set the transport input lines as facts 
+  set_fact: 
+    transport_input_lines: "{{ config_output.stdout_lines | flatten }}" 
+
+- name: Score 1.2.2 Set 'transport input ssh' for 'line vty' connections 
+  set_fact: 
+    ssh_score: "{{ 1 if transport_input_lines[0] else 0 }}"
+
+- name: Register output of 'show running-config | section aux'
+  cisco.ios.ios_command: 
+    commands: 
+      - show running-config | section aux
+  register: config_output 
+
+- name: Combine the aux line configuration as a single string 
+  set_fact:
+    aux_config: "{{ config_output.stdout[0] }}"
+
+- name: Score 1.2.3 Set 'no exec' for 'line aux 0' 
+  set_fact:
+    no_exec_score: "{{ 1 if 'no exec' in aux_config else 0 }}"
+
+- name: Register output of 'show ip access-list "{{vty_acl_number}}"'
+  cisco.ios.ios_command:
+    commands:
+      - "show ip access-list {{vty_acl_number}}"
+  register: acl_output
+
+- name: Score 1.2.4 Create 'access-list' for use with 'line vty''
+  set_fact: 
+    vty_acl_score: "{{ 1 if acl_output.stdout[0] else 0 }}"
+
+- name: Register output of 'sh run | sec vty'
+  cisco.ios.ios_command:
+    commands:
+      - sh run | sec vty
+  register: vty_output
+
+- name: Score 1.2.5 Set 'access-class' for 'line vty' 
+  set_fact:
+    vty_access_score: "{{ 1 if 'access-class ' ~ vty_acl_number ~ ' in' in vty_output.stdout[0] else 0 }}"
+      
+- name: Register output of 'sh run | sec line aux 0'
+  cisco.ios.ios_command:
+    commands:
+      - sh run | sec line aux 0
+  register: aux_output
+
+- name: Score 1.2.6 Set 'exec-timeout' to less than or equal to 10 minutes for 'line aux 0' 
+  set_fact:
+    aux_exec_timeout_score: "{{ 1 if 'exec-timeout ' ~ timeout_config.timeout_in_minutes ~ ' ' ~ timeout_config.timeout_in_seconds in aux_output.stdout[0] else 0 }}"
+      
+- name: Register output of 'sh run | sec line con 0'
+  cisco.ios.ios_command:
+    commands:
+      - sh run | sec line con 0
+  register: console_output
+
+- name: Score 1.2.7 Set 'exec-timeout' to less than or equal to 10 minutes 'line console 0' 
+  set_fact:
+    console_exec_timeout_score: "{{ 1 if 'exec-timeout ' ~ timeout_config.timeout_in_minutes ~ ' ' ~ timeout_config.timeout_in_seconds in console_output.stdout[0] else 0 }}"
+
+- name: Register output of 'sh run | sec line vty 0 4'
+  cisco.ios.ios_command:
+    commands:
+      - sh run | sec line vty 0 4
+  register: vty_output_1
+
+- name: Score 1.2.9 Set 'exec-timeout' less than or equal to 10 minutes 'line vty 0 4' 
+  set_fact:
+    vty_exec_timeout_score_1: "{{ 1 if 'exec-timeout ' ~ timeout_config.timeout_in_minutes ~ ' ' ~ timeout_config.timeout_in_seconds in vty_output_1.stdout[0] else 0 }}"
+
+- name: Register output of 'sh run | sec line vty 5 15'
+  cisco.ios.ios_command:
+    commands:
+      - sh run | sec line vty 5 15
+  register: vty_output_2
+
+- name: Score 1.2.10 Set 'exec-timeout' less than or equal to 10 minutes 'line vty 5 15'
+  set_fact:
+    vty_exec_timeout_score_2: "{{ 1 if 'exec-timeout ' ~ timeout_config.timeout_in_minutes ~ ' ' ~ timeout_config.timeout_in_seconds in vty_output_2.stdout[0] else 0 }}"
+
+- name:  Register output of 'sh line aux 0 | incl input transports'
+  cisco.ios.ios_command:
+    commands:
+      - sh line aux 0 | incl input transports
+  register: aux_output
+
+- name: 1.2.11 Set 'transport input none' for 'line aux 0'
+  set_fact:
+    aux_transports_score: "{{ 1 if 'Allowed input transports are none' in aux_output.stdout[0] else 0 }}"

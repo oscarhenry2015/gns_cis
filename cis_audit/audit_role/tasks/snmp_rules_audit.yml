@@ -1,0 +1,82 @@
+---
+- name: Register output of 'show snmp community' 
+  cisco.ios.ios_command: 
+    commands: 
+      - show snmp community  
+  register: snmp_output 
+
+- name: Score 1.5.1 Set 'no snmp-server' to disable SNMP when unused 
+  set_fact: 
+    snmp_agent_score: >-
+      {{ 1 if 'SNMP agent not enabled' in snmp_output.stdout[0] else 0 }}
+    
+- name: Score 1.5.2 Unset 'private' for 'snmp-server community'
+  set_fact: 
+    snmp_private_community_score: >- 
+      {{ 0 if 'private' in snmp_output.stdout[0] else 1 }}
+    
+- name: Score 1.5.3 Unset 'public' for 'snmp-server community'
+  set_fact: 
+    snmp_public_community_score: >- 
+      {{ 0 if 'public' in snmp_output.stdout[0] else 1 }}
+
+- name: Register output  of 'show run | incl snmp-server community'
+  cisco.ios.ios_command:
+    commands:
+      - show run | incl snmp-server community 
+  register: snmp_server_output
+
+- name: Score 1.5.4 Do not set 'RW' for any 'snmp-server community'
+  set_fact:
+    snmp_rw_community_score: >-
+      {{
+        0 if snmp_server_output.stdout[0] | regex_search('RW')
+        else 1
+      }}
+
+- name: Register output of 'show run | incl snmp-server'
+  cisco.ios.ios_command:
+    commands:
+      - show run | incl snmp-server
+  register: snmp_traps_output
+
+- name: Score 1.5.7 Set 'snmp-server host' when using SNMP
+  set_fact:
+    snmp_server_score: "{{ 1 if 'snmp-server host' in snmp_traps_output.stdout[0] else 0 }}"
+
+- name: 1.5.8 Set 'snmp-server enable traps snmp'
+  set_fact:
+    snmp_traps_enabled_score: >-
+      {{
+        1 if snmp_traps_output.stdout[0] | length > 0
+        else 0
+       }}
+
+- name: Register output for 'show snmp group' 
+  cisco.ios.ios_command: 
+    commands: 
+      - show snmp group | inc "{{ item }}"
+  loop: "{{ snmp_groups }}" 
+  register: snmp_group_outputs 
+
+- name: Score 1.5.9 Set 'priv' for each 'snmp-server group' using SNMPv3
+  set_fact:
+    snmp_group_score: >-
+      {{
+        0 if snmp_group_outputs.results | selectattr('stdout', 'search', 'security model:v3 priv') | list | length < snmp_groups | length 
+        else 1
+      }}
+
+- name: Register output of 'show snmp user'
+  cisco.ios.ios_command:
+    commands:
+      - show snmp user
+  register: snmp_user_output
+
+- name: Score 1.5.10 Require 'aes 128' as minimum for 'snmp-server user' when using SNMPv3
+  set_fact:
+    snmp_user_score: >-
+      {{
+        1 if snmp_user_output.stdout[0] | regex_search('Privacy Protocol:\s*AES128')
+        else 0
+      }}

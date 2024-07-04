@@ -1,0 +1,9 @@
+- name: Configure BGP neighbor authentication
+  cisco.ios.ios_config:
+    lines:
+      - "neighbor {{ item.ip }} password {{ bgp_configuration.password }}"
+    parents:
+      - "router bgp {{ bgp_configuration.as_number }}"
+      - "address-family ipv4"
+  loop: "{{ bgp_configuration.neighbors }}"
+  when: bgp_configuration is defined and bgp_configuration.neighbors is defined

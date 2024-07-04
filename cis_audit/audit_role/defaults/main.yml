@@ -1,0 +1,41 @@
+---
+# defaults file for audit_role
+vty_acl_number: 150
+timeout_config:
+  timeout_in_minutes: 9
+  timeout_in_seconds: 0
+  lines:
+    - line aux 0
+    - line console 0
+    - line vty 0 4
+    - line vty 5 15
+
+snmp_groups: 
+  - v3group 
+#  - v3group2 
+#  - v3group3
+# Add more SNMP groups as needed
+
+logging_hosts:
+  - 192.168.1.100
+  - 192.168.1.101
+
+ospf_interfaces:
+  - name: "GigabitEthernet1/0"
+  - name: "GigabitEthernet2/0"
+
+
+eigrp_interfaces:
+  - "GigabitEthernet1/0"
+  - "GigabitEthernet2/0"
+
+access_list_name: EXTERNAL_ACL
+external_interface: "GigabitEthernet3/0"
+
+key_chain_name: EIGRP_KEY_CHAIN
+key_number: 1
+key_string: 7
+eigrp_as_number: 100
+authentication_key_chain_name: EIGRP_KEY_CHAIN
+
+ripv2_key_chain_name: RIPv2_KEY_CHAINA

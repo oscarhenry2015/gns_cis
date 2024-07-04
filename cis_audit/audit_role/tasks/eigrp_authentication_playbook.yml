@@ -1,0 +1,91 @@
+- name: Register ouput of 'sh run | section key chain {{ key_chain_name }}'
+  cisco.ios.ios_command:
+    commands:
+      - "sh run | section key chain {{ key_chain_name }}"
+  register: key_chain_output
+
+- name: Score 3.3.1.1 Set 'key chain'
+  set_fact:
+    Key_chain_name_score: "{{ 0 if key_chain_output.stdout[0] == '' else 1 }}"
+
+- name: Register ouput of 'show run | section key {{ key_number }}'
+  cisco.ios.ios_command:
+    commands:
+      - "show run | section key {{ key_number }}"
+  register: key_number_output
+
+- name: Score 3.3.1.2 Set 'key'
+  set_fact:
+    key_number_score: "{{ 0 if key_number_output.stdout[0] == '' else 1 }}"
+
+- name: Register ouput of 'sh run | section key-string'
+  cisco.ios.ios_command:
+    commands:
+      - "sh run | section key-string"
+  register: key_string_output
+
+- name: Score 3.3.1.3 Set 'key-string'
+  set_fact:
+    key_string_score: "{{ 0 if key_string_output.stdout[0] == '' else 1 }}"
+
+- name: Register ouput of 'sh run | section address-family ipv4 unicast autonomous-system {{eigrp_as_number }}'
+  cisco.ios.ios_command:
+    commands:
+      - "sh run | section address-family ipv4 unicast autonomous-system {{eigrp_as_number }}"
+  register: address_family_output
+
+- name: Score 3.3.1.4 Set 'address-family ipv4 autonomous-system' 
+  set_fact:
+    address_family_score: "{{ 0 if address_family_output.stdout[0] == '' else 1 }}"
+
+- name: Register output of 'show running-config | section router eigrp'
+  cisco.ios.ios_command:
+    commands:
+      - "show running-config | section router eigrp"
+  register: eigrp_config_output
+
+- name: Score 3.3.1.5 Set 'af-interface default'
+  set_fact:
+    af_interface_default_score: "{{ 1 if 'af-interface' in eigrp_config_output.stdout[0] else 0 }}"
+
+- name: Register ouput of 'sh run | sec authentication key-chain {{authentication_key_chain_name}}'
+  cisco.ios.ios_command:
+    commands:
+      - "sh run | sec authentication key-chain {{authentication_key_chain_name}}"
+  register: authentication_key_output
+
+- name: Score 3.3.1.6 'Set 'authentication key-chain''
+  set_fact:
+    authentication_key_score: "{{ 0 if authentication_key_output.stdout[0] == '' else 1 }}"
+
+- name: Register ouput of 'show run | section authentication mode md5'
+  cisco.ios.ios_command:
+    commands:
+      - "show run | section authentication mode md5"
+  register: authentication_mode_output
+
+- name: Score 3.3.1.7 Set 'authentication mode md5'
+  set_fact:
+    authentication_mode_score: "{{ 0 if key_string_output.stdout[0] == '' else 1 }}"
+
+- name: register output of 'show running-config interface {{ item }} | include key-chain'
+  cisco.ios.ios_command:
+    commands:
+      - "show running-config interface {{ item }} | include key-chain"
+  loop: "{{ eigrp_interfaces }}"
+  register: key_chain_output
+
+- name: Score 3.3.1.8 Set 'ip authentication key-chain eigrp'
+  set_fact:
+    ip_authentication_key_chain_score: "{{ 0 if key_chain_output.results | selectattr('stdout', 'search', 'key-chain') | list | length < eigrp_interfaces | length else 1 }}"
+
+- name: Register output of 'show running-config interface {{ item }} | incl authentication mode'
+  cisco.ios.ios_command:
+    commands:
+      - "show running-config interface {{ item }} | incl authentication mode"
+  loop: "{{ eigrp_interfaces }}"
+  register: authentication_mode_output
+
+- name: Score 3.3.1.9 Set 'ip authentication mode eigrp'
+  set_fact:
+    eigrp_authentication_mode_score: "{{ 0 if authentication_mode_output.results | selectattr('stdout', 'search', 'md5') | list | length < eigrp_interfaces | length else 1 }}"

@@ -1,0 +1,119 @@
+---
+- name: Retrieve the running configuration
+  ios_command:
+    commands: show running-config
+  register: run_config_output
+
+- name: Check if 'aaa new-model' is enabled [1 point]
+  set_fact:
+    aaa_new_model_score: >-
+      {{
+        1 if 'aaa new-model' in run_config_output.stdout[0].splitlines() and
+           not 'no aaa new-model' in run_config_output.stdout[0].splitlines()
+        else 0
+      }}
+
+- name: Check if 'aaa authentication login' is configured [1 point]
+  set_fact:
+    aaa_auth_login_score: 1
+  when: "'aaa authentication login' in run_config_output.stdout[0]"
+
+- name: Check if 'aaa authentication enable' is configured [1 point]
+  set_fact:
+    aaa_auth_enable_score: 1
+  when: "'aaa authentication enable' in run_config_output.stdout[0]"
+
+
+- name: Gather running configuration sections for lines
+  ios_command:
+    commands:
+      - show running-config | sec line | incl login authentication
+  register: sec_line_output
+
+- name: Check for 'login authentication' for line con 0 
+  set_fact:
+    aaa_login_auth_line_con_0: >-
+      {{
+        1 if 'line con 0' in sec_line_output.stdout[0]
+        else 0
+      }}
+
+- name: Check for 'login authentication' for line vty 0 4
+  set_fact:
+    aaa_login_auth_line_vty: >-
+      {{
+        1 if 'line vty 0 4' in sec_line_output.stdout[0]
+        else 0
+      }}
+
+- name: Check for login authentication for 'line aux 0
+  set_fact:
+    aaa_login_auth_line_aux_0: >-
+      {{
+        1 if 'line aux 0' in sec_line_output.stdout[0]
+        else 0
+      }}
+    
+- name: Check if 'aaa accounting commands' is configured
+  set_fact:
+    aaa_accounting_commands_score: >-
+      {{
+        1 if 'aaa accounting commands' in ' '.join(run_config_output.stdout)
+        else 0
+      }}
+
+- name: Check if 'aaa accounting connection' is configured
+  set_fact:
+    aaa_accounting_connection_score: >-
+      {{
+        1 if 'aaa accounting connection' in ' '.join(run_config_output.stdout)
+        else 0
+      }}
+
+- name: Check if 'aaa accounting exec' is configured
+  set_fact:
+    aaa_accounting_exec_score: >-
+      {{
+        1 if 'aaa accounting exec' in ' '.join(run_config_output.stdout)
+        else 0
+      }}
+
+- name: Check if 'aaa accounting network' is configured
+  set_fact:
+    aaa_accounting_network_score: >-
+      {{
+        1 if 'aaa accounting network' in ' '.join(run_config_output.stdout)
+        else 0
+      }}
+
+- name: Check if 'aaa accounting system' is configured
+  set_fact:
+    aaa_accounting_system_score: >-
+      {{
+        1 if 'aaa accounting system' in ' '.join(run_config_output.stdout)
+        else 0
+      }}
+
+- name: Calculate total score 
+  set_fact:
+    total_score: >-
+      {{
+        total_score | int +
+        aaa_new_model_score | int +
+        aaa_auth_login_score | int +
+        aaa_auth_enable_score | int +
+        aaa_login_auth_line_con_0 | int +
+        aaa_login_auth_line_aux_0 | int +
+        aaa_login_auth_line_vty | int +
+        aaa_accounting_commands_score | int +
+        aaa_accounting_connection_score | int +
+        aaa_accounting_exec_score | int +
+        aaa_accounting_network_score | int +
+        aaa_accounting_system_score | int 
+      }}
+
+- name: Print the final total score
+  debug:
+    msg: "The final total score is {{ total_score }}"
+
+    

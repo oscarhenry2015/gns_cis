@@ -1,0 +1,79 @@
+--- 
+- name: Register output of 'show run | incl logging'
+  cisco.ios.ios_command:
+    commands:
+      - show run | incl logging
+  register: logging_output
+
+- name: Score 2.2.1 Set 'logging on'
+  set_fact:
+    logging_on_score: >-
+      {{ 1 if 'logging' in logging_output.stdout[0] else 0
+      }}
+
+- name: Register output of 'show run | incl logging buffered' 
+  cisco.ios.ios_command: 
+    commands: 
+      - show run | incl logging buffered 
+  register: logging_buffered_output 
+
+- name: Score 2.2.2 Set 'buffer size' for 'logging buffered' 
+  set_fact: 
+    logging_buffered_score: >- 
+      {{ 1 if 'logging buffered' in logging_buffered_output.stdout[0] else 0
+      }}
+
+- name: Register output of 'show run | incl logging console' 
+  cisco.ios.ios_command: 
+    commands: 
+      - show run | incl logging console 
+  register: logging_console_output 
+
+- name: Score 2.2.3 Set 'logging console critical' 
+  set_fact: 
+    logging_console_score: >- 
+      {{ 1 if 'logging console' in logging_console_output.stdout[0] else 0
+      }}
+
+- name: Register output of 'show logging | include Logging'
+  cisco.ios.ios_command:
+    commands:
+      - "show logging | include Logging {{ item }}"
+  loop: "{{ logging_hosts }}"
+  register: logging_output
+
+- name: Score 2.2.4 Set IP address for 'logging host'
+  set_fact:
+    logging_score: "{{ 0 if logging_output.results | selectattr('stdout', 'equalto', '') | list | length > 0 else 1 }}"
+
+- name: Register output of 'show logging | include level informational'
+  cisco.ios.ios_command:
+    commands:
+      - "show logging | include Trap logging: level informational"
+  register: trap_logging_output
+
+- name: Score 2.2.5 Set 'logging trap informational'
+  set_fact:
+    trap_logging_score: "{{ 0 if trap_logging_output.stdout[0] == '' else 1 }}"
+
+- name: Register output of 'show run | incl service timestamps' 
+  cisco.ios.ios_command: 
+    commands: 
+      - show run | incl service timestamps 
+  register: service_timestamps_output
+
+- name: Score 2.2.6 Set 'service timestamps debug datetime' 
+  set_fact: 
+    service_timestamps_score: >- 
+      {{ 1 if service_timestamps_output.stdout_lines | length > 0 else 0 }}
+
+- name: Register output of 'show run | incl logging source' 
+  cisco.ios.ios_command: 
+    commands: 
+      - show run | incl logging source 
+  register: logging_source_output 
+
+- name: Score 2.2.7 Set 'logging source interface'
+  set_fact: 
+    logging_source_score: >- 
+      {{ 1 if logging_source_output.stdout[0] != '' else 0 }}

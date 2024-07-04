@@ -1,0 +1,12 @@
+---
+- name: Create a file and write content to it
+  hosts: all_cisco_devices
+  tasks:
+    - name: Create a file and write content
+      copy:
+        dest: /root/cis_audit/{{ inventory_hostname }}.txt
+        content: |
+          This is the content of {{ inventory_hostname }}.txt.
+          You can add multiple lines here.
+
+

@@ -1,0 +1,20 @@
+---
+- name: Register output of 'show ip access-list {{ access_list_name }}'
+  cisco.ios.ios_command:
+    commands:
+      - "show ip access-list {{ access_list_name }}"
+  register: acl_output
+
+- name: Score 3.2.1 Set 'ip access-list extended' to Forbid Private Source Addresses from External Networks
+  set_fact:
+    ip_access_list_score: "{{ 0 if acl_output.stdout[0] == '' else 1 }}"
+    
+- name: Register output of 'show running-config | section interface {{ external_interface }}'
+  cisco.ios.ios_command:
+    commands:
+      - "show running-config | section interface {{ external_interface }}"
+  register: interface_output
+
+- name: Score 3.2.2 Set inbound 'ip access-group' on the External Interface
+  set_fact:
+    ip_access_group_score: "{{ 0 if not ('ip access-group ' ~ access_list_name) in interface_output.stdout[0] else 1 }}"

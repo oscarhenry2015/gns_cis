@@ -1,0 +1,69 @@
+- name: 3.3.1.1 Set 'key chain 
+  cisco.ios.ios_config:
+    lines:
+      - key chain {{ eigrp_key_chain_name }}
+
+- name: 3.3.1.2 Set 'key' [1 point]
+  cisco.ios.ios_config:
+    lines:
+      - key {{ eigrp_key_number }}
+    parents: key chain {{ eigrp_key_chain_name }}
+
+- name: 3.3.1.3 Set 'key-string' 
+  cisco.ios.ios_config:
+    lines:
+      - "key chain {{ eigrp_key_chain_name }}"
+      - "key {{ eigrp_key_number }}"
+      - "key-string {{ eigrp_key_chain_name }}"
+    parents:
+      - "key chain {{ eigrp_key_chain_name }}"
+      - "key {{ eigrp_key_number }}"
+
+- name: 3.3.1.4 Set 'address-family ipv4 autonomous-system'
+  cisco.ios.ios_config:
+    lines:
+      - address-family ipv4 autonomous-system {{ eigrp_as_number }}
+    parents: router eigrp {{ eigrp_instance }}
+
+- name: 3.3.1.5 Set 'af-interface default'
+  cisco.ios.ios_config:
+    lines:
+      - address-family ipv4 autonomous-system {{ eigrp_as_number }}
+      - af-interface default
+    parents: router eigrp {{ eigrp_instance }}
+
+- name: 3.3.1.6 Set 'authentication key-chain' [1 point]
+  cisco.ios.ios_config:
+    lines:
+      - "authentication key-chain {{ eigrp_key_chain_name }}"
+    parents:
+      - "router eigrp {{ eigrp_instance }}"
+      - "address-family ipv4 autonomous-system {{ eigrp_as_number }}"
+      - "af-interface {{ item.name }}"
+  loop: "{{ eigrp_interfaces }}"
+  when: eigrp_interfaces is defined
+
+- name: 3.3.1.7 Set 'authentication mode md5' [1 point]
+  cisco.ios.ios_config:
+    lines:
+      - "authentication mode md5"
+    parents:
+      - "router eigrp {{ eigrp_instance }}"
+      - "address-family ipv4 autonomous-system {{ eigrp_as_number }}"
+      - "af-interface {{ item.name }}"
+  loop: "{{ eigrp_interfaces }}"
+  when: eigrp_interfaces is defined
+
+- name: 3.3.1.8 Set 'ip authentication key-chain eigrp'
+  cisco.ios.ios_config:
+    lines:
+      - "ip authentication key-chain eigrp {{ eigrp_as_number }} {{ eigrp_key_chain_name }}"
+    parents: "interface {{ item.name }}"
+  loop: "{{ eigrp_interfaces }}"
+
+- name: 3.3.1.9 Set 'ip authentication mode eigrp'
+  cisco.ios.ios_config:
+    lines:
+      - "ip authentication mode eigrp {{ eigrp_as_number }} md5"
+    parents: "interface {{ item.name }}"
+  loop: "{{ eigrp_interfaces }}"

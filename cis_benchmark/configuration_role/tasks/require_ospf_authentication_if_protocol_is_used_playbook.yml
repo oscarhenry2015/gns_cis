@@ -1,0 +1,17 @@
+---
+- name: Configure OSPF with Message Digest Authentication
+  cisco.ios.ios_config:
+    lines:
+      - "area {{ ospf_area_id }} authentication message-digest"
+    parents:
+      - "router ospf {{ ospf_process_id }}"
+
+- name: Configure OSPF Message Digest Authentication on interfaces
+  cisco.ios.ios_config:
+    lines:
+      - "interface {{ item.name }}"
+      - "ip ospf message-digest-key {{ ospf_md5_key_id }} md5 {{ ospf_md5_key }}"
+    parents:
+      - "router ospf {{ ospf_process_id }}"
+  loop: "{{ ospf_interfaces }}"
+  when: ospf_interfaces is defined

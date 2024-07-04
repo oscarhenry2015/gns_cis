@@ -1,0 +1,30 @@
+---
+- name: Register output of 'sh running-config | beg banner exec'
+  cisco.ios.ios_command:
+    commands:
+      - sh running-config | beg banner exec
+  register: banner_output
+
+- name: Score 1.3.1 Set the 'banner-text' for 'banner exec'
+  set_fact:
+    exec_banner_score: "{{ 1 if banner_output.stdout[0] != '' else 0 }}"
+
+- name: Register output of 'sh running-config | beg banner login'
+  cisco.ios.ios_command:
+    commands:
+      - sh running-config | beg banner login
+  register: banner_output
+
+- name: Score 1.3.2 Set the 'banner-text' for 'banner login'
+  set_fact:
+    login_banner_score: "{{ 1 if banner_output.stdout[0] != '' else 0 }}"
+
+- name: Register output of 'sh running-config | beg banner motd'
+  cisco.ios.ios_command:
+    commands:
+      - sh running-config | beg banner motd
+  register: banner_output
+
+- name: Score 1.3.3 Set the 'banner-text' for 'banner motd'
+  set_fact:
+    motd_banner_score: "{{ 1 if banner_output.stdout[0] != '' else 0 }}"

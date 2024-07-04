@@ -1,0 +1,56 @@
+--- 
+- name: Register output of 'show run | include ntp' 
+  cisco.ios.ios_command: 
+    commands: 
+      - show run | include ntp 
+  register: ntp_output 
+
+- name: Score 2.3.1.1 Set 'ntp authenticate' 
+  set_fact: 
+    ntp_authenticate_score: >-
+      {{ 1 if 'ntp authenticate' in ntp_output.stdout[0] else 0
+      }}
+
+- name: Register output of 'show run | include ntp authentication-key' 
+  cisco.ios.ios_command: 
+    commands: 
+      - show run | include ntp authentication-key 
+  register: ntp_auth_key_output 
+
+- name: Score 2.3.1.2 Set 'ntp authentication-key' 
+  set_fact: 
+    ntp_authentication_key_score: >- 
+      {{ 1 if ntp_auth_key_output.stdout[0] != '' else 0 }}
+
+- name: Register output of 'show run | include ntp trusted-key' 
+  cisco.ios.ios_command: 
+    commands: 
+      - show run | include ntp trusted-key 
+  register: ntp_trusted_key_output 
+
+- name: Score 2.3.1.3 Set the 'ntp trusted-key'
+  set_fact:
+    ntp_trusted_key_score: >- 
+      {{ 1 if ntp_trusted_key_output.stdout[0] != '' else 0 }}
+
+- name: Register output of 'show run | include ntp server' 
+  cisco.ios.ios_command: 
+    commands: 
+      - show run | include ntp server 
+  register: ntp_server_output 
+
+- name: Score 2.3.1.4 Set 'key' for each 'ntp server'
+  set_fact: 
+    ntp_server_score: >-
+      {{ 1 if ntp_server_output.stdout[0] != '' else 0 }}
+
+- name: Register output of 'show ntp associations' 
+  cisco.ios.ios_command: 
+    commands: 
+      - show ntp associations 
+  register: ntp_associations_output 
+
+- name: Score 2.3.2 Set 'ip address' for 'ntp server'
+  set_fact: 
+    ntp_associations_score: >-
+      {{ 1 if ntp_associations_output.stdout[0] != '' else 0 }}

@@ -1,0 +1,50 @@
+---
+- name: Register output of 'show running-config | section key chain {{ ripv2_key_chain_name }}'
+  cisco.ios.ios_command:
+    commands:
+      - "show running-config | section key chain {{ ripv2_key_chain_name }}"
+  register: key_chain_output
+
+- name: Score 3.3.3.1 Set 'key chain'
+  set_fact:
+    key_chain_score: "{{ 0 if key_chain_output.stdout[0] == '' else 1 }}"
+
+- name: Register ouput of 'show run | section key {{ key_number }}'
+  cisco.ios.ios_command:
+    commands:
+      - "show run | section key {{ key_number }}"
+  register: key_number_output
+
+- name: Score 3.3.3.2 Set 'key'
+  set_fact:
+    key_number_score: "{{ 0 if key_number_output.stdout[0] == '' else 1 }}"
+
+- name: Register ouput of 'sh run | section key-string'
+  cisco.ios.ios_command:
+    commands:
+      - "sh run | section key-string"
+  register: key_string_output
+
+- name: Score 3.3.3.3 Set 'key-string'
+  set_fact:
+    key_string_score: "{{ 0 if key_string_output.stdout[0] == '' else 1 }}"
+
+- name: Register output of 'show running-config | section authentication key-chain {{ ripv2_key_chain_name }}'
+  cisco.ios.ios_command:
+    commands:
+      - "show running-config | section authentication key-chain {{ ripv2_key_chain_name }}"
+  register: key_chain_output
+
+- name: Score 3.3.3.4 Set 'ip rip authentication key-chain'
+  set_fact:
+     rip_authentication_key_chain_score: "{{ 0 if key_chain_output.stdout[0] == '' else 1 }}"
+
+- name: Register ouput of 'show run | section authentication mode md5'
+  cisco.ios.ios_command:
+    commands:
+      - "show run | section ip rip authentication mode md5"
+  register: authentication_mode_output
+
+- name: Score 3.3.3.5 Set 'authentication mode md5'
+  set_fact:
+    authentication_mode_score: "{{ 0 if key_string_output.stdout[0] == '' else 1 }}"

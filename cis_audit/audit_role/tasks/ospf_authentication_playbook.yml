@@ -1,0 +1,21 @@
+---
+- name: Register output of 'sh run | section router ospf'
+  cisco.ios.ios_command:
+    commands:
+      - "sh run | section router ospf"
+  register: ospf_config_output
+
+- name: Score 3.3.2.1 Set 'authentication message-digest' for OSPF area
+  set_fact:
+    authentication_message_digest_score: "{{ 0 if 'area 0 authentication message-digest' not in ospf_config_output.stdout[0] else 1 }}"
+
+- name: Register output of 'sh run interface {{ item.name }}'
+  cisco.ios.ios_command:
+    commands:
+      - "sh run interface {{ item.name }}"
+  loop: "{{ ospf_interfaces }}"
+  register: ospf_md5_output
+
+- name: Score 3.3.2.2 Set 'ip ospf message-digest-key md5' 
+  set_fact:
+    message_digest_score: "{{ 0 if ospf_md5_output.results | selectattr('stdout', 'search', key_chain_name) | list | length < ospf_interfaces | length else 1 }}"

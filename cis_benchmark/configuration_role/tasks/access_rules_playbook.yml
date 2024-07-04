@@ -1,0 +1,46 @@
+---
+- name: 1.2.1 Set 'privilege 1' for local users [1 Point]
+  cisco.ios.ios_config:
+    lines:
+      - "username {{ item.username }} privilege 1 password {{ item.password }}"
+  loop: "{{ local_users }}"
+
+- name: 1.2.2 Set 'transport input ssh' for 'line vty' connections [1 Point]
+  cisco.ios.ios_config:
+    lines:
+      - "line vty 0 15"
+      - "transport input ssh"
+
+- name: 1.2.3 Set 'no exec' for 'line aux 0'
+  cisco.ios.ios_config:
+    lines:
+      - "no exec"
+    parents: "line aux 0"
+
+- name: 1.2.4 Create 'access-list' for use with 'line vty' [1 Point]
+  cisco.ios.ios_config:
+    lines:
+      - "access-list {{ vty_acl_config.vty_acl_number }} permit tcp {{ vty_acl_config.vty_acl_block_with_mask }} any"
+      - "access-list {{ vty_acl_config.vty_acl_number }} permit tcp host {{ vty_acl_config.vty_acl_host }} any"
+      - "access-list {{ vty_acl_config.vty_acl_number }} deny ip any any log"
+
+- name: 1.2.5 Set 'access-class' for 'line vty' [1 Point]
+  cisco.ios.ios_config:
+    lines:
+      - "access-class {{ vty_acl_config.vty_acl_number }} in"
+    parents: "line vty 0 15"
+
+- name: 1.2.6 - 1.2.10 Set 'exec-timeout' to less than or equal to 10 minutes for 'line aux, line con 0, line vty and tty' [4 Points]
+  cisco.ios.ios_config:
+    lines:
+      - exec-timeout {{ timeout_config.timeout_in_minutes }} {{ timeout_config.timeout_in_seconds }}
+    parents: "{{ item }}"
+  loop: "{{ timeout_config.lines }}"
+
+- name: 1.2.11 Set 'transport input none' for 'line aux 0' [1 Point]
+  cisco.ios.ios_config:
+    lines:
+      - transport input none
+    parents: line aux 0
+
+

@@ -1,0 +1,16 @@
+# roles/cis_audit/task/aaa_audit.yml
+---
+- name: Retrieve the running configuration
+  ios_command:
+    commands: show running-config
+  register: run_config_output
+
+- name: Check if 'aaa new-model' is enabled [1 point]
+  set_fact:
+    aaa_new_model_score: >-
+      {{
+        1 if 'aaa new-model' in run_config_output.stdout[0].splitlines() and
+           not 'no aaa new-model' in run_config_output.stdout[0].splitlines()
+        else 0
+      }}
+

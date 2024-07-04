@@ -1,0 +1,35 @@
+---
+#- name: Configure logging
+#  cisco.ios.ios_config:
+#    lines:
+#      - logging enable
+
+- name: Configure logging buffered
+  cisco.ios.ios_config:
+    lines:
+      - logging buffered 64000
+
+- name: Configure logging console critical
+  cisco.ios.ios_config:
+    lines:
+      - logging console critical
+
+- name: Configure syslog servers for Cisco IOS devices
+  cisco.ios.ios_config:
+    lines: "{{ item }}"
+  loop: "{{ syslog_servers | map('regex_replace', '^', 'logging host ') | list }}"
+
+- name: Configure trap informational
+  cisco.ios.ios_config:
+    lines:
+      - logging trap informational
+
+- name: Configure trap informational
+  cisco.ios.ios_config:
+    lines:
+      - service timestamps debug datetime msec show-timezone
+
+- name: Bind logging to the loopback interface
+  cisco.ios.ios_config:
+    lines:
+      - logging source-interface loopback{{ loopback_interface_number }}

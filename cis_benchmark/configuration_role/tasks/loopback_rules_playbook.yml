@@ -1,0 +1,33 @@
+---
+- name: 2.4.1 Create a single 'interface loopback' [1 Point]
+  cisco.ios.ios_config:
+    lines:
+      - interface loopback{{ loopback_interface_number }}
+      - ip address {{ loopback_ip_address }} {{ loopback_subnet_mask }}
+
+- name: Enable AAA new model
+  cisco.ios.ios_config:
+    lines:
+      - aaa new-model
+
+- name: 2.4.2 Set AAA 'source-interface' RADIUS [1 Point]
+  cisco.ios.ios_config:
+    lines:
+      - ip radius source-interface loopback {{ loopback_interface_number }}
+
+- name: 2.4.2 Set AAA 'source-interface' TACACS+ [1 point] 
+  cisco.ios.ios_config:
+    lines:
+      - aaa group server tacacs+ {{ aaa_group_name }}
+      - ip tacacs source-interface loopback {{ loopback_interface_number }}
+    parents: aaa group server tacacs+ {{ aaa_group_name }}
+
+- name: 2.4.3 Set 'ntp source' to Loopback Interface [1 Point]
+  cisco.ios.ios_config:
+    lines:
+      - ntp source loopback {{ loopback_interface_number }}
+
+- name: 2.4.4 Set 'ip tftp source-interface' to the Loopback Interface [1 Point]
+  cisco.ios.ios_config:
+    lines:
+      - ip tftp source-interface loopback {{ loopback_interface_number }}

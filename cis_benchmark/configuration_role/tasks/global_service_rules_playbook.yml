@@ -1,0 +1,65 @@
+- name: 2.1.1.1.1 Set the 'hostname'[1 Point]
+  cisco.ios.ios_hostname:
+    config:
+      hostname: "{{ ios_devices[inventory_hostname].hostname }}"
+  when: inventory_hostname in ios_devices
+
+- name: 2.1.1.1.2 Set the 'ip domain-name' [1 point]
+  cisco.ios.ios_config:
+    lines:
+      - ip domain-name {{ domain_name }}
+
+#- name: 2.1.1.1.3 Set 'modulus' to greater than or equal to 2048 for 'crypto key generate rsa' 
+#  cisco.ios.ios_config:
+#    lines:
+#      - crypto key generate rsa general-keys modulus 2048
+
+- name: 2.1.1.1.4 Set 'seconds' for 'ip ssh timeout' [1 point]
+  cisco.ios.ios_config:
+    lines:
+      - ip ssh time-out {{ ssh_timeout }}
+
+- name: 2.1.1.1.5 Set maximimum value for 'ip ssh authentication-retries' [1 point]
+  cisco.ios.ios_config:
+    lines:
+      - ip ssh authentication-retries {{ ssh_auth_retries }}
+
+- name: 2.1.1.2 Set version 2 for 'ip ssh version [1 Point]
+  cisco.ios.ios_config:
+    lines:
+      - ip ssh version 2
+
+- name: 2.1.2 Set 'no cdp run' [1 Point]
+  cisco.ios.ios_config:
+    lines:
+      - no cdp run
+
+- name: 2.1.3 Set 'no ip bootp server' [1 Point]
+  cisco.ios.ios_config:
+    lines:
+      - ip dhcp bootp ignore
+
+- name: 2.1.4 Set 'no service dhcp' [1 Point]
+  cisco.ios.ios_config:
+    lines:
+      - no service dhcp
+
+- name: 2.1.5 Set 'no ip identd' [1 Point]
+  cisco.ios.ios_config:
+    lines:
+      - no ip identd
+
+- name: 2.1.6 Set 'service tcp-keepalives-in' [1 Point]
+  cisco.ios.ios_config:
+    lines:
+      - service tcp-keepalives-in
+
+- name: 2.1.7 Set 'service tcp-keepalives-out' [1 Point]
+  cisco.ios.ios_config:
+    lines:
+      - service tcp-keepalives-out
+
+- name: 2.1.8 Set 'no service pad' [1 Point]
+  cisco.ios.ios_config:
+    lines:
+      - no service pad

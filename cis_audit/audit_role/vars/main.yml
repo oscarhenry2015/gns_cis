@@ -1,0 +1,20 @@
+---
+# vars file for audit_role
+aaa_rules:
+  - name: Enable 'aaa new-model'
+    score: "{{ aaa_new_model_score }}"
+
+  - name: Enable 'aaa authentication login'
+    score: "{{ aaa_auth_login_score }}"
+
+  - name: Enable 'aaa authentication enable default'
+    score: "{{ aaa_new_model_score }}"
+  # Add all other AAA rules here
+
+access_rules:
+  - name: Set 'privilege 1' for local users
+    score: "{{ privilege_user_score }}"
+  # Add all other Access rules here
+
+# Define banner_rules and password_rules similarly
+

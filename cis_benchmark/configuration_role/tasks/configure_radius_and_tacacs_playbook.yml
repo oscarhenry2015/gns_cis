@@ -1,0 +1,48 @@
+---
+- name: Configure line vty
+  cisco.ios.ios_config:
+    lines:
+      - "line vty 0 15"
+      - "transport input ssh"
+
+- name: Configure enable secret
+  cisco.ios.ios_config:
+    lines:
+      - "enable secret {{enable_secret}}"
+
+- name: Configure backup user
+  cisco.ios.ios_config:
+    lines:
+      - username {{backup_user_name}} privilege 1 password {{backup_user_password }}
+
+- name: Enable 'aaa new-model'
+  cisco.ios.ios_config:
+    lines:
+      - aaa new-model
+
+- name: Configure RADIUS server name, ip and key
+  cisco.ios.ios_config:
+    lines:
+      - "radius server {{aaa_radius_config.server_name}}"
+      - " address ipv4 {{aaa_radius_config.server_ip}} auth-port 1812 acct-port 1813"
+      - " key {{aaa_radius_config.key}}"
+
+- name: Configure RADIUS group and server
+  cisco.ios.ios_config:
+    lines:
+      - "aaa group server radius {{aaa_radius_config.group_name}}"
+      - " server name {{aaa_radius_config.server_name}}"
+
+- name: Configure TACACS server name, ip and key
+  cisco.ios.ios_config:
+    lines:
+      - "tacacs server {{aaa_tacacs_config.server_name}}"
+      - " address ipv4 {{aaa_tacacs_config.server_ip}}"
+      - " key {{aaa_tacacs_config.key}}"
+
+- name: Configure TACACS group and server  
+  cisco.ios.ios_config:
+    lines:
+      - "aaa group server tacacs+ {{aaa_tacacs_config.group_name}}"
+      - " server name {{aaa_tacacs_config.server_name}}"
+

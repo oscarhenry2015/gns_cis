@@ -1,0 +1,63 @@
+---
+- name: Get running configuration from Cisco switches
+  hosts: all_cisco_devices
+  gather_facts: no  # We don't need to gather facts for this task
+  become: yes
+  become_method: enable
+
+  roles:
+    - role: configuration_role
+    - role: cis_audit_role
+  vars:
+    ansible_become_pass: class
+
+  vars_files:
+    - cis_audit_role/vars/scores.yml
+    - configuration_role/vars/secrets.yml
+
+  tasks:
+#    - name: AAA Rules Configurations
+#      include_tasks: /root/cis_benchmark/configuration_role/tasks/aaa_config_playbook.yml
+
+#    - name: Access Rules Configurations
+#      include_tasks: /root/cis_benchmark/configuration_role/tasks/access_rules_playbook.yml
+
+#    - name: Banner Rules Configurations
+#      include_tasks: /root/cis_benchmark/configuration_role/tasks/banner_rules_playbook.yml
+
+#    - name: Password Rules Configurations
+#      include_tasks: /root/cis_benchmark/configuration_role/tasks/password_rules_playbook.yml
+
+#    - name: SNMP Rules Configurations
+#      include_tasks: /root/cis_benchmark/configuration_role/tasks/snmp_rules_playbook.yml
+
+#    - name: global service rules Configurations
+#      include_tasks: /root/cis_benchmark/configuration_role/tasks/global_service_rules_playbook.yml
+
+#    - name: Logging rules Configurations
+#      include_tasks: /root/cis_benchmark/configuration_role/tasks/logging_rules_playbook.yml
+
+#    - name: NTP rules Configurations
+#      include_tasks: /root/cis_benchmark/configuration_role/tasks/ntp_rules_playbook.yml
+
+#    - name: Loopback rules Configurations
+#      include_tasks: /root/cis_benchmark/configuration_role/tasks/loopback_rules_playbook.yml
+
+#    - name: Routing rules Configurations
+#      include_tasks: /root/cis_benchmark/configuration_role/tasks/routing_rules_playbook.yml
+
+#    - name: Task for border router R3 only
+#      include_tasks: /root/cis_benchmark/configuration_role/tasks/border_router_filtering_playbook.yml
+#      when: inventory_hostname == 'R3'
+
+#    - name: Neighbor Authentication Rules Configurations
+#      include_tasks: /root/cis_benchmark/configuration_role/tasks/neighbor_authentication_playbook.yml
+
+#    - name: OSPF Authentication Rules Configurations
+#      include_tasks: /root/cis_benchmark/configuration_role/tasks/require_ospf_authentication_if_protocol_is_used_playbook.yml
+
+#    - name: RIPv2 Authentication Rules Configurations
+#      include_tasks: /root/cis_benchmark/configuration_role/tasks/require_ripv2_authentication_if_protocol_is_used_playbook.yml
+
+    - name: BGP Authentication Rules Configurations
+      include_tasks: /root/cis_benchmark/configuration_role/tasks/require_bgp_authentication_if_protocol_is_used_playbook.yml

@@ -1,0 +1,42 @@
+--- 
+- name: Register output of 'show ip int brief | include Loopback' 
+  cisco.ios.ios_command: 
+    commands: 
+      - show ip int brief | include Loopback 
+  register: loopback_interface_output 
+
+- name: Score 2.4.1 Create a single 'interface loopback' 
+  set_fact: 
+    loopback_interface_score: >- 
+      {{ 1 if loopback_interface_output.stdout[0] != '' else 0 }}
+
+- name: Register output of 'show run | include tacacs source | radius source' 
+  cisco.ios.ios_command: 
+    commands: 
+      - show run | include tacacs source | radius source 
+  register: aaa_source_output
+
+- name: Score 2.4.2 Set AAA 'source-interface'
+  set_fact: 
+    aaa_source_score: >- 
+      {{ 1 if aaa_source_output.stdout[0] else 0 }}
+
+- name: Register output of 'show run | include ntp source' 
+  cisco.ios.ios_command: 
+    commands: 
+      - show run | include ntp source 
+  register: ntp_source_output 
+
+- name: Score 2.4.3 Set 'ntp source' to Loopback Interface
+  set_fact: 
+    ntp_source_score: "{{ 1 if ntp_source_output.stdout[0] != '' else 0 }}" 
+
+- name: Register output of 'show run | include tftp source-interface' 
+  cisco.ios.ios_command: 
+    commands: 
+      - show run | include tftp source-interface 
+  register: tftp_source_output
+
+- name: Score 2.4.4 Set 'ip tftp source-interface' to the Loopback Interface
+  set_fact: 
+    tftp_source_score: "{{ 1 if tftp_source_output.stdout[0] != '' else 0 }}" 

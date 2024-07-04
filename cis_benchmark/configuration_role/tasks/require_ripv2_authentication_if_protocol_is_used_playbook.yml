@@ -1,0 +1,39 @@
+---
+- name: 3.3.1.1 Set 'key chain [1 point]
+  cisco.ios.ios_config:
+    lines:
+      - key chain {{ ripv2_key_chain_name }}
+
+- name: 3.3.1.2 Set 'key' [1 point]
+  cisco.ios.ios_config:
+    lines:
+      - key {{ ripv2_key_number }}
+    parents: key chain {{ ripv2_key_chain_name }}
+
+- name: Configure key string
+  cisco.ios.ios_config:
+    lines:
+      - "key chain {{ ripv2_key_chain_name }}"
+      - "key {{ ripv2_key_number }}"
+      - "key-string {{ ripv2_key_chain_name }}"
+    parents:
+      - "key chain {{ ripv2_key_chain_name }}"
+      - "key {{ ripv2_key_number }}"
+
+- name: Configure Interface with RIPv2 Key Chain
+  cisco.ios.ios_config:
+    lines:
+      - "ip rip authentication key-chain {{ ripv2_key_chain_name }}"
+    parents:
+      - "interface {{ item.name }}"
+  loop: "{{ ripv2_interfaces }}"
+  when: ripv2_interfaces is defined
+
+- name: 3.3.3.5 Set 'ip rip authentication mode' to 'md5' [1 point]
+  cisco.ios.ios_config:
+    lines:
+      - "ip rip authentication mode md5"
+    parents:
+      - "interface {{ item.name }}"
+  loop: "{{ ripv2_interfaces }}"
+  when: ripv2_interfaces is defined

@@ -1,0 +1,58 @@
+---
+- name: 1.5.1 Set 'no snmp-server' to disable SNMP when unused [1 point]
+  cisco.ios.ios_config:
+    lines:
+      - "no snmp-server"
+
+- name: 1.5.2 Unset 'private' for 'snmp-server community' [1 point]
+  cisco.ios.ios_config:
+    lines: "no snmp-server community private"
+
+- name: 1.5.3 Unset 'public' for 'snmp-server community' [1 point]
+  cisco.ios.ios_config:
+    lines: "no snmp-server community public"
+
+- name: 1.5.4 Do not set 'RW' for any 'snmp-server community' [1 point]
+  cisco.ios.ios_config:
+    lines: "{{ snmp_write_community_strings | default(omit) | map('regex_replace', '^', 'no snmp-server community ') | list }}"
+  loop: "{{ snmp_write_community_strings }}"
+  when: snmp_write_community_strings is defined
+
+- name: 1.5.5 Set the ACL for each 'snmp-server community [1 point]'
+  cisco.ios.ios_config:
+    lines: 
+      - "snmp-server community {{ item.name }} ro {{ item.access_list }}"
+  loop: "{{ snmp_community_strings }}"
+
+#- name: 1.5.6 Create an 'access-list' for use with SNMP [1 point]
+#  cisco.ios.ios_config:
+#    lines: 
+#      - "ip access-list standard snmp_access_list"
+#      - "permit {{ item }}"
+#  loop: "{{ snmp_access_list }}"
+
+- name: 1.5.7 Set 'snmp-server host' when using SNMP [1 point]
+  cisco.ios.ios_config:
+    lines: >
+      snmp-server host {{ item.ip_address }} {{ snmp_trap_community_string | default(default_trap_community_string) }}
+  loop: "{{ snmp_hosts }}"
+
+- name: 1.5.8 Set 'snmp-server enable traps snmp'
+  cisco.ios.ios_config:
+    lines:
+      - "snmp-server enable traps snmp authentication"
+      - "snmp-server enable traps snmp linkup"
+      - "snmp-server enable traps snmp linkdown"
+      - "snmp-server enable traps snmp coldstart"
+
+- name: 1.5.9 Set 'priv' for each 'snmp-server group' using SNMPv3 [1 point]
+  cisco.ios.ios_config:
+    lines:
+      - "snmp-server group {{ snmpv3_group_name }} v3 pri"
+  when: snmpv3_group_name is defined
+
+- name: 1.5.10 Require 'aes 128' as minimum for 'snmp-server user' when using SNMPv3 [1 point]
+  cisco.ios.ios_config:
+    lines:
+      - "snmp-server user {{ item.name }} {{ item.group }} v3 auth {{ item.auth_protocol }} {{ item.auth_password }} priv aes 128  {{ item.priv_password }} access {{ item.acl }}"
+  loop: "{{ snmpv3_users }}"

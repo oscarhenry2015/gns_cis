@@ -1,0 +1,205 @@
+---
+- name: Get running configuration from Cisco switches
+  hosts: all_cisco_devices
+  gather_facts: yes
+  become: yes
+  become_method: enable
+
+  roles:
+    - role: /root/cis_audit/audit_role
+  vars:
+    ansible_become_pass: class
+
+  vars_files:
+    - /root/cis_audit/audit_role/vars/scores.yml
+
+  tasks:
+    - name: Audit AAA Rules Configurations
+      include_tasks: /root/cis_audit/audit_role/tasks/aaa_audit.yml
+
+    - name: Audit Access Rules Configurations
+      include_tasks: /root/cis_audit/audit_role/tasks/access_rules_audit.yml
+
+    - name: Audit Banner Rules Configurations
+      include_tasks: /root/cis_audit/audit_role/tasks/banner_rules_audit.yml
+
+    - name: Audit Password Rules Configurations
+      include_tasks: /root/cis_audit/audit_role/tasks/password_rules_audit.yml
+
+    - name: Audit SNMP Rules Configurations
+      include_tasks: /root/cis_audit/audit_role/tasks/snmp_rules_audit.yml
+
+    - name: Audit SSH Rules Configurations
+      include_tasks: /root/cis_audit/audit_role/tasks/ssh_prerequisite_audit.yml
+
+    - name: Audit Logging Rules Configurations
+      include_tasks: /root/cis_audit/audit_role/tasks/logging_audit.yml
+
+    - name: Audit NTP Rules Configurations
+      include_tasks: /root/cis_audit/audit_role/tasks/ntp_audit.yml
+
+    - name: Audit Loopback Rules Configurations
+      include_tasks: /root/cis_audit/audit_role/tasks/loopback_audit.yml
+
+    - name: Routing Rules Configurations
+      include_tasks: /root/cis_audit/audit_role/tasks/routing_rules_audit_playbook.yml
+
+    - name: Audit Border Router Rules Configurations
+      include_tasks: /root/cis_audit/audit_role/tasks/border_router_rules_audit_playbook.yml
+
+    - name: Audit EIGRP Authentication Rules Configurations
+      include_tasks: /root/cis_audit/audit_role/tasks/eigrp_authentication_playbook.yml
+
+    - name: Audit OSPF Authentication Rules Configurations
+      include_tasks: /root/cis_audit/audit_role/tasks/ospf_authentication_playbook.yml
+
+    - name: Audit RIP Authentication Rules Configurations
+      include_tasks: /root/cis_audit/audit_role/tasks/rip_authentication_playbook.yml
+
+    - name: Get current date
+      command: date +%Y-%m-%d
+      register: current_date
+
+    - name: Get current time
+      command: date +%H:%M:%S
+      register: current_time
+
+    - name: Set date and time facts
+      set_fact:
+        report_date: "{{ current_date.stdout }}"
+        report_time: "{{ current_time.stdout }}"
+
+    - name: Create a file and write content
+      copy:
+        dest: /root/cis_audit/audit_role/{{ inventory_hostname }}.txt
+        content: |
+          CIS Benchmark 4.1.1 Audit Report for {{inventory_hostname}} 
+          Audit file was created on: {{ report_date }} at {{ report_time}}.
+
+          1. Detailed Results
+          --------------------
+          1.1 Local Authentication, Authorization, and Accounting (AAA) Rules
+            1.1.1 Enable 'aaa new-model': "{{'Compliant' if aaa_new_model_score == "1" else 'Non-Compliant'}}"
+            1.1.2 Enable 'aaa authentication login': "{{'Compliant' if aaa_auth_login_score == "1" else 'Non-Compliant'}}" 
+            1.1.3 Enable 'aaa authentication enable default': {{'Compliant' if aaa_auth_enable_score == "1" else 'Non-Compliant'}}
+            1.1.4 Set 'login authentication for 'line con 0': {{'Not Audited' }}
+            1.1.5 Set 'login authentication for 'line tty': {{ 'Not Audited' }}
+            1.1.6 Set 'login authentication for 'line vty':{{ 'Not Audited' }}
+            1.1.7 Set aaa accounting to log all privileged use commands using commands 15: {{'Compliant' if aaa_accounting_commands_score == "1" else 'Non-Compliant' }}
+            1.1.8 Set 'aaa accounting connection': {{'Compliant' if aaa_accounting_connection_score == "1" else 'Non-Compliant'}}
+            1.1.9 Set 'aaa accounting exec':{{'Compliant' if aaa_accounting_exec_score == "1" else 'Non-Compliant' }}
+            1.1.10 Set 'aaa accounting network':{{'Compliant' if aaa_accounting_network_score == "1" else 'Non-Compliant' }}
+            1.1.11 Set 'aaa accounting system':{{'Compliant' if aaa_accounting_system_score == "1" else 'Non-Compliant' }}
+
+          1.2 Access Rules
+            1.2.1 Set 'privilege 1' for local users:{{'Compliant' if privilege_user_score== "1" else 'Non-Compliant'}}
+            1.2.2 Set 'transport input ssh' for 'line vty' connections:{{'Compliant' if 'ssh_score'== "1" else 'Non-Compliant'}}
+            1.2.3 Set 'no exec' for 'line aux 0':{{'Compliant' if no_exec_score == "1" else 'Non-Compliant'}}
+            1.2.4 Create access-list for use with 'line vty':{{'Compliant' if vty_acl_score == "1" else 'Non-Compliant'}}
+            1.2.5 Set 'access-class' for 'line vty':{{'Compliant' if vty_access_score == "1" else 'Non-Compliant'}}
+            1.2.6 Set 'exec-timeout' to 10 minutes for 'line aux 0':{{'Compliant' if aux_exec_timeout_score == "1" else 'Non-Compliant'}}
+            1.2.7 Set 'exec-timeout' to 10 minutes for 'line console 0':{{'Compliant' if console_exec_timeout_score == "1" else 'Non-Compliant'}}
+            1.2.8 Set 'exec-timeout' to 10 mnutes for 'line tty':{{'Not Audited'}}
+            1.2.9 Set 'exec-timeout' to 10 minutes for 'line vty':{{'Compliant' if vty_exec_timeout_score_1 == "1" else 'Non-Compliant'}}
+            1.2.10 set 'transport input none' for 'line aux 0':{{'Compliant' if aux_transports_score == "1" else 'Non-Compliant'}}
+
+          1.3 Banner Rules
+            1.3.1 Set the 'banner-text' for 'banner exec':{{'Compliant' if exec_banner_score == "1" else 'Non-Compliant'}}
+            1.3.2 Set the 'banner-text' for 'banner login':{{'Compliant' if login_banner_score == "1" else 'Non-Compliant'}}
+            1.3.3 Set the 'banner-text' for 'banner motd':{{'Compliant' if motd_banner_score == "1" else 'Non-Compliant'}}
+
+          1.4 Password Rules
+            1.4.1 Set password for 'enable secret':{{'Compliant' if enable_secret_score == "1" else 'Non-Compliant'}}
+            1.4.2 Enable 'service password-encryption':{{'Compliant' if password_encryption_score == "1" else 'Non-Compliant'}}
+            1.4.3 Set 'username secret' for all local users:{{'Compliant' if encrypted_user_score == "1" else 'Non-Compliant'}}
+
+          1.5 SNMP Rules
+            1.5.1 Set 'no snmp-server' to disable SNMP when unused:{{'Compliant' if snmp_agent_score == "1" else 'Non-Compliant'}}
+            1.5.2 Unset 'private' for 'snmp-server community':{{'Compliant' if snmp_private_community_score == "1" else 'Non-Compliant'}}
+            1.5.3 Unset 'public' for 'snmp-server community':{{'Compliant' if snmp_public_community_score == "1" else 'Non-Compliant'}}
+            1.5.4 Do not set 'rw' for any 'snmp-server community':{{'Compliant' if snmp_rw_community_score == "1" else 'Non-Compliant'}}
+            1.5.5 Set the AGL for each 'snmp-server community':{{'Compliant' if snmp_server_score == "1" else 'Non-Compliant'}}
+            1.5.6 Create an 'access-list' for use with SNMP:{{'Not Audited'}}
+            1.5.7 Set 'snmp-server host' when using SNMP:{{'Not Audited'}}
+            1.5.8 Set 'snmp-server enable traps snmp':{{'Compliant' if snmp_traps_enabled_score == "1" else 'Non-Compliant'}}
+            1.5.9 Set 'priv' for each 'snmp-server group' using SNMPv3:{{'Compliant' if snmp_group_score == "1" else 'Non-Compliant'}}
+            1.5.10 Require 'aes 128' as minimum for 'snmp-server user' when using SNMPv3:{{'Compliant' if snmp_user_score == "1" else 'Non-Compliant'}}
+
+          2 Control Plane. 
+          2.1 Global Service Rules 
+            2.1.1 Setup SSH 
+              2.1.1.1.1 Set the 'hostname':{{'Compliant' if hostname_score == "1" else 'Non-Compliant'}}  
+              2.1.1.1.2 Set the 'ip domain-name':{{'Compliant' if domain_name_score == "1" else 'Non-Compliant'}}
+              2.1.1.1.3 Set 'modulus' to greater than or equal to 2048 for crypto key generate rsa':{{'Compliant' if rsa_key_score == "1" else 'Non-Compliant'}}
+              2.1.1.1.4 Set 'seconds' for "ip ssh timeout":{{'Compliant' if ssh_timeout_score == "1" else 'Non-Compliant'}}
+              2.1.1.1.5 Set maximimum value for 'ip ssh authentication-retries:{{'Compliant' if ssh_retries_score == "1" else 'Non-Compliant'}}
+              2.1.1.2 Set version 2 for 'ip ssh version':{{'Compliant' if ssh_version_score == "1" else 'Non-Compliant'}}
+              2.1.2 Set 'no cdprun':{{'Compliant' if cdp_score == "1" else 'Non-Compliant'}}
+              2.1.3 Set "no ip bootp server':{{'Compliant' if bootp_score == "1" else 'Non-Compliant'}}
+              2.1.4 Set"no service dhcp':{{'Compliant' if dhcp_score == "1" else 'Non-Compliant'}}
+              2.1.5 Set 'no ip identd':{{'Compliant' if identd_score == "1" else 'Non-Compliant'}}
+              2.1.6 Set 'servlce tep-keepalives-in':{{'Compliant' if tcp_keepalives_in == "1" else 'Non-Compliant'}}
+              2.1.7 Set 'service tcp-keepalives-out":{{'Compliant' if tcp_keepalives_out == "1" else 'Non-Compliant'}}
+              2.1.8 Set 'no service pad':{{'Compliant' if pad_service_score == "1" else 'Non-Compliant'}}
+
+          2.2 Logging Rules. 
+            2.2.1 Set 'logging on':{{'Compliant' if logging_on_score == "1" else 'Non-Compliant'}}
+            2.2.2 Set buffer size' for "logging buffered':{{'Compliant' if logging_buffered_score == "1" else 'Non-Compliant'}}
+            2.2.3 Set "logging console crltical:{{'Compliant' if logging_console_score == "1" else 'Non-Compliant'}}
+            2.2.4 Set IP address for logging host':{{'Not Audited'}}
+            2.2.5 Set 'logging trap informational':{{'Not Audited'}}
+            2.2.6 Set 'servica timestamps debug datetime':{{'Compliant' if service_timestamps_score == "1" else 'Non-Compliant'}}
+            2.2.7 Set 'logging source interface':{{'Compliant' if logging_source_score == "1" else 'Non-Compliant'}}
+
+          2.3 NTP Rules 
+            2.3.1 Require Encryption Keys for NTP
+            2.3.1.1 Set 'ntp authenticate':{{'Compliant' if ntp_authenticate_score == "1" else 'Non-Compliant'}}
+            2.3.1.2 Set 'ntp authentication-key':{{'Compliant' if ntp_authentication_key_score == "1" else 'Non-Compliant'}}
+            2.3.1.3 Set the 'ntp trusted-key':{{'Compliant' if ntp_trusted_key_score == "1" else 'Non-Compliant'}}
+            2.3.1.4 Set key' for each 'ntp server':{{'Compliant' if ntp_server_score == "1" else 'Non-Compliant'}}
+            2.3.2 Set 'ip address' for ntp server':{{'Compliant' if ntp_associations_score== "1" else 'Non-Compliant'}}
+          
+          2.4 Loopback Rules
+            2.4.1 Create a single 'interface loopback':{{'Compliant' if loopback_interface_score == "1" else 'Non-Compliant'}} 
+            2.4.2 Set AAA 'source-interface':{{'Compliant' if aaa_source_score == "1" else 'Non-Compliant'}} 
+            2.4.3 Set 'ntp source' to Loopback Interface:{{'Compliant' if ntp_source_score == "1" else 'Non-Compliant'}}
+            2.4.4 Set 'ip tftp source-interface' to the Loopback interface:{{'Compliant' if tftp_source_score == "1" else 'Non-Compliant'}}
+
+
+          3 Data Plane
+          3.1 Routing Rules
+            3.1.1 Set 'no ip source-route':{{'Compliant' if ip_source_route_score == "1" else 'Non-Compliant'}}
+            3.1.2 Set 'no ip proxy-arp':{{'Compliant' if proxy_arp_score == "1" else 'Non-Compliant'}}
+            3.1.3 Set 'no interface tunnel':{{'Compliant' if interface_tunnel_score == "1" else 'Non-Compliant'}}
+            3.1.4 Set 'ip verify unicast source reachable-via':{{'Compliant' if ip_verify_score == "1" else 'Non-Compliant'}}
+
+          3.2 Border Router Filtering
+            3.2.1 Set 'ip access-list extended' to Forbid Private Source Addresses from 
+            External Networks:{{'Compliant' if ip_access_list_score == "1" else 'Non-Compliant'}}
+            3.2.2 Set inbound 'ip access-group" on the External Interface:{{'Compliant' if ip_access_group_score == "1" else 'Non-Compliant'}}
+
+          3.3 Neighbor Authentication
+           3.3.1 Require EIGRP Authentication if protocol is used
+            3.3.1.1 Set 'key chain':{{'Compliant' if Key_chain_name_score == "1" else 'Non-Compliant'}}
+            3.3.1.2 Set 'key':{{'Compliant' if key_number_score == "1" else 'Non-Compliant'}}
+            3.3.1.3 Set 'key-string' :{{'Compliant' if key_string_score == "1" else 'Non-Compliant'}}
+            3.3.1.4 Set 'address-family ipv4 autonomous-system':{{'Compliant' if address_family_score == "1" else 'Non-Compliant'}}
+            3.3.1.5 Set 'af-interfacer default':{{'Compliant' if af_interface_default_score == "1" else 'Non-Compliant'}}
+            3.3.1.6 Set 'authentication key-chain':{{'Compliant' if authentication_key_score == "1" else 'Non-Compliant'}}
+            3.3.1.7 Set 'authentication mode md5':{{'Compliant' if authentication_mode_score == "1" else 'Non-Compliant'}}
+            3.3.1.8 Set 'ip authentication key-chain eigrp':{{'Compliant' if ip_authentication_key_chain_score == "1" else 'Non-Compliant'}}
+            3.3.1.9 set 'ip authentication mode eigrp':{{'Compliant' if eigrp_authentication_mode_score == "1" else 'Non-Compliant'}}
+          
+          3.3.2 Require OSPF Authentication if Protocol is used
+            3.3.2.1 Set 'authentication message-digest' for OSPF area:{{'Compliant' if authentication_message_digest_score == "1" else 'Non-Compliant'}}
+            3.3.2.2 Set 'ip ospf message-digest-key md5:{{'Compliant' if message_digest_score == "1" else 'Non-Compliant'}}
+
+          3.3.3 Require RIPv2 Authentication if Protocol is used
+            3.3.3.1 Set 'key chain':{{'Compliant' if key_chain_score == "1" else 'Non-Compliant'}}
+            3.3.3.2 Set 'key':{{'Compliant' if key_number_score == "1" else 'Non-Compliant'}}
+            3.3.3.3 Set 'key-string':{{'Compliant' if key_string_score == "1" else 'Non-Compliant'}} 
+            3.3.3.4 Set 'ip rip authentication key-chain':{{'Compliant' if rip_authentication_key_chain_score == "1" else 'Non-Compliant'}}
+            3.3.3.5 Set 'ip rip authentication mode' to 'md5":{{'Compliant' if authentication_mode_score == "1" else 'Non-Compliant'}}
+            
+#          3.3.4 Require BGP Authentication if Protocol is Used
+#            3.3.4.1 Set 'neighbor password':{{'Compliant' if key_number_score == "1" else 'Non-Compliant'}}
