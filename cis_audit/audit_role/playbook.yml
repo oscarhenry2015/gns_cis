@@ -7,11 +7,12 @@
 
   roles:
     - role: /root/cis_audit/audit_role
-  vars:
-    ansible_become_pass: class
 
   vars_files:
     - /root/cis_audit/audit_role/vars/scores.yml
+
+  vars:
+    ansible_become_pass: "{{enable_secret}}"
 
   tasks:
     - name: Audit AAA Rules Configurations
@@ -82,14 +83,14 @@
             1.1.1 Enable 'aaa new-model': "{{'Compliant' if aaa_new_model_score == "1" else 'Non-Compliant'}}"
             1.1.2 Enable 'aaa authentication login': "{{'Compliant' if aaa_auth_login_score == "1" else 'Non-Compliant'}}" 
             1.1.3 Enable 'aaa authentication enable default': {{'Compliant' if aaa_auth_enable_score == "1" else 'Non-Compliant'}}
-            1.1.4 Set 'login authentication for 'line con 0': {{'Not Audited' }}
+            1.1.4 Set 'login authentication for 'line con 0': {{'Compliant' if aaa_login_auth_line_con_0 == "1" else 'Non-Compliant'}}
             1.1.5 Set 'login authentication for 'line tty': {{ 'Not Audited' }}
-            1.1.6 Set 'login authentication for 'line vty':{{ 'Not Audited' }}
-            1.1.7 Set aaa accounting to log all privileged use commands using commands 15: {{'Compliant' if aaa_accounting_commands_score == "1" else 'Non-Compliant' }}
+            1.1.6 Set 'login authentication for 'line vty':{{'Compliant' if aaa_login_auth_line_vty == "1" else 'Non-Compliant'}}
+            1.1.7 Set aaa accounting to log all privileged use commands using commands 15: {{'Compliant' if aaa_accounting_commands_score == "1" else 'Non-Compliant'}}
             1.1.8 Set 'aaa accounting connection': {{'Compliant' if aaa_accounting_connection_score == "1" else 'Non-Compliant'}}
-            1.1.9 Set 'aaa accounting exec':{{'Compliant' if aaa_accounting_exec_score == "1" else 'Non-Compliant' }}
-            1.1.10 Set 'aaa accounting network':{{'Compliant' if aaa_accounting_network_score == "1" else 'Non-Compliant' }}
-            1.1.11 Set 'aaa accounting system':{{'Compliant' if aaa_accounting_system_score == "1" else 'Non-Compliant' }}
+            1.1.9 Set 'aaa accounting exec':{{'Compliant' if aaa_accounting_exec_score == "1" else 'Non-Compliant'}}
+            1.1.10 Set 'aaa accounting network':{{'Compliant' if aaa_accounting_network_score == "1" else 'Non-Compliant'}}
+            1.1.11 Set 'aaa accounting system':{{'Compliant' if aaa_accounting_system_score == "1" else 'Non-Compliant'}}
 
           1.2 Access Rules
             1.2.1 Set 'privilege 1' for local users:{{'Compliant' if privilege_user_score== "1" else 'Non-Compliant'}}
@@ -146,8 +147,8 @@
             2.2.1 Set 'logging on':{{'Compliant' if logging_on_score == "1" else 'Non-Compliant'}}
             2.2.2 Set buffer size' for "logging buffered':{{'Compliant' if logging_buffered_score == "1" else 'Non-Compliant'}}
             2.2.3 Set "logging console crltical:{{'Compliant' if logging_console_score == "1" else 'Non-Compliant'}}
-            2.2.4 Set IP address for logging host':{{'Not Audited'}}
-            2.2.5 Set 'logging trap informational':{{'Not Audited'}}
+            2.2.4 Set IP address for logging host':{{'Compliant' if logging_score== "1" else 'Non-Compliant'}}
+            2.2.5 Set 'logging trap informational':{{'Compliant' if trap_logging_score== "1" else 'Non-Compliant'}}
             2.2.6 Set 'servica timestamps debug datetime':{{'Compliant' if service_timestamps_score == "1" else 'Non-Compliant'}}
             2.2.7 Set 'logging source interface':{{'Compliant' if logging_source_score == "1" else 'Non-Compliant'}}
 

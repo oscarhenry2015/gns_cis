@@ -33,29 +33,27 @@
   set_fact:
     aaa_auth_enable_score: "{{ 1 if aaa_auth_output.stdout_lines != [['']] else 0 }}"
 
-#- name: Check for 'login authentication' for line con 0 
-#  set_fact:
-#    aaa_login_auth_line_con_0: >-
-#      {{
-#        1 if 'line con 0' in sec_line_output.stdout[0]
-#        else 0
-#      }}
+- name: Register output of 'sh run | sec line | incl login authentication'
+  cisco.ios.ios_command:
+    commands:
+      - sh run | sec line | incl login authentication
+  register: login_auth_output
 
-#- name: Check for 'login authentication' for line vty 0 4
-#  set_fact:
-#    aaa_login_auth_line_vty: >-
-#      {{
-#        1 if 'line vty 0 4' in sec_line_output.stdout[0]
-#        else 0
-#      }}
+- name: Score 1.1.4 Set 'login authentication for 'line con 0' 
+  set_fact:
+    aaa_login_auth_line_con_0: >-
+      {{
+        1 if 'line con 0' in login_auth_output.stdout[0]
+        else 0
+      }}
 
-#- name: Check for login authentication for 'line aux 0
-#  set_fact:
-#    aaa_login_auth_line_aux_0: >-
-#      {{
-#        1 if 'line aux 0' in sec_line_output.stdout[0]
-#        else 0
-#      }}
+- name: 1.1.6 Set 'login authentication for 'line vty' 
+  set_fact:
+    aaa_login_auth_line_vty: >-
+      {{
+        1 if 'line vty 0 4' in login_auth_output.stdout[0]
+        else 0
+      }}
     
 - name: Register output of 'show run | include aaa accounting commands'
   cisco.ios.ios_command:

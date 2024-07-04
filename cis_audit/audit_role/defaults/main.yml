@@ -39,3 +39,8 @@ eigrp_as_number: 100
 authentication_key_chain_name: EIGRP_KEY_CHAIN
 
 ripv2_key_chain_name: RIPv2_KEY_CHAINA
+
+total_score: 0
+aaa_auth_login_score: 0
+aaa_auth_enable_score: 0
+

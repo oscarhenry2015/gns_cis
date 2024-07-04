@@ -38,13 +38,13 @@
 - name: Register output of 'show logging | include Logging'
   cisco.ios.ios_command:
     commands:
-      - "show logging | include Logging {{ item }}"
+      - "show logging | include Logging to {{ item }}"
   loop: "{{ logging_hosts }}"
   register: logging_output
 
 - name: Score 2.2.4 Set IP address for 'logging host'
   set_fact:
-    logging_score: "{{ 0 if logging_output.results | selectattr('stdout', 'equalto', '') | list | length > 0 else 1 }}"
+    logging_score: "{{ 0 if logging_output == '' else 1 }}"
 
 - name: Register output of 'show logging | include level informational'
   cisco.ios.ios_command:
@@ -54,7 +54,7 @@
 
 - name: Score 2.2.5 Set 'logging trap informational'
   set_fact:
-    trap_logging_score: "{{ 0 if trap_logging_output.stdout[0] == '' else 1 }}"
+    trap_logging_score: "{{ 0 if trap_logging_output == '' else 1 }}"
 
 - name: Register output of 'show run | incl service timestamps' 
   cisco.ios.ios_command: 

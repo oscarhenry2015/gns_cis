@@ -1,0 +1,128 @@
+CIS Benchmark 4.1.1 Audit Report for R2 
+Audit file was created on: 2024-07-04 at 12:25:40.
+
+1. Detailed Results
+--------------------
+1.1 Local Authentication, Authorization, and Accounting (AAA) Rules
+  1.1.1 Enable 'aaa new-model': "Compliant"
+  1.1.2 Enable 'aaa authentication login': "Compliant" 
+  1.1.3 Enable 'aaa authentication enable default': Compliant
+  1.1.4 Set 'login authentication for 'line con 0': Compliant
+  1.1.5 Set 'login authentication for 'line tty': Not Audited
+  1.1.6 Set 'login authentication for 'line vty':Compliant
+  1.1.7 Set aaa accounting to log all privileged use commands using commands 15: Compliant
+  1.1.8 Set 'aaa accounting connection': Compliant
+  1.1.9 Set 'aaa accounting exec':Compliant
+  1.1.10 Set 'aaa accounting network':Compliant
+  1.1.11 Set 'aaa accounting system':Compliant
+
+1.2 Access Rules
+  1.2.1 Set 'privilege 1' for local users:Compliant
+  1.2.2 Set 'transport input ssh' for 'line vty' connections:Non-Compliant
+  1.2.3 Set 'no exec' for 'line aux 0':Compliant
+  1.2.4 Create access-list for use with 'line vty':Compliant
+  1.2.5 Set 'access-class' for 'line vty':Compliant
+  1.2.6 Set 'exec-timeout' to 10 minutes for 'line aux 0':Compliant
+  1.2.7 Set 'exec-timeout' to 10 minutes for 'line console 0':Compliant
+  1.2.8 Set 'exec-timeout' to 10 mnutes for 'line tty':Not Audited
+  1.2.9 Set 'exec-timeout' to 10 minutes for 'line vty':Compliant
+  1.2.10 set 'transport input none' for 'line aux 0':Compliant
+
+1.3 Banner Rules
+  1.3.1 Set the 'banner-text' for 'banner exec':Compliant
+  1.3.2 Set the 'banner-text' for 'banner login':Compliant
+  1.3.3 Set the 'banner-text' for 'banner motd':Compliant
+
+1.4 Password Rules
+  1.4.1 Set password for 'enable secret':Compliant
+  1.4.2 Enable 'service password-encryption':Compliant
+  1.4.3 Set 'username secret' for all local users:Non-Compliant
+
+1.5 SNMP Rules
+  1.5.1 Set 'no snmp-server' to disable SNMP when unused:Non-Compliant
+  1.5.2 Unset 'private' for 'snmp-server community':Compliant
+  1.5.3 Unset 'public' for 'snmp-server community':Compliant
+  1.5.4 Do not set 'rw' for any 'snmp-server community':Compliant
+  1.5.5 Set the AGL for each 'snmp-server community':Compliant
+  1.5.6 Create an 'access-list' for use with SNMP:Not Audited
+  1.5.7 Set 'snmp-server host' when using SNMP:Not Audited
+  1.5.8 Set 'snmp-server enable traps snmp':Compliant
+  1.5.9 Set 'priv' for each 'snmp-server group' using SNMPv3:Non-Compliant
+  1.5.10 Require 'aes 128' as minimum for 'snmp-server user' when using SNMPv3:Compliant
+
+2 Control Plane. 
+2.1 Global Service Rules 
+  2.1.1 Setup SSH 
+    2.1.1.1.1 Set the 'hostname':Compliant  
+    2.1.1.1.2 Set the 'ip domain-name':Compliant
+    2.1.1.1.3 Set 'modulus' to greater than or equal to 2048 for crypto key generate rsa':Compliant
+    2.1.1.1.4 Set 'seconds' for "ip ssh timeout":Compliant
+    2.1.1.1.5 Set maximimum value for 'ip ssh authentication-retries:Compliant
+    2.1.1.2 Set version 2 for 'ip ssh version':Compliant
+    2.1.2 Set 'no cdprun':Compliant
+    2.1.3 Set "no ip bootp server':Compliant
+    2.1.4 Set"no service dhcp':Compliant
+    2.1.5 Set 'no ip identd':Compliant
+    2.1.6 Set 'servlce tep-keepalives-in':Compliant
+    2.1.7 Set 'service tcp-keepalives-out":Compliant
+    2.1.8 Set 'no service pad':Compliant
+
+2.2 Logging Rules. 
+  2.2.1 Set 'logging on':Compliant
+  2.2.2 Set buffer size' for "logging buffered':Compliant
+  2.2.3 Set "logging console crltical:Compliant
+  2.2.4 Set IP address for logging host':Compliant
+  2.2.5 Set 'logging trap informational':Compliant
+  2.2.6 Set 'servica timestamps debug datetime':Compliant
+  2.2.7 Set 'logging source interface':Compliant
+
+2.3 NTP Rules 
+  2.3.1 Require Encryption Keys for NTP
+  2.3.1.1 Set 'ntp authenticate':Compliant
+  2.3.1.2 Set 'ntp authentication-key':Compliant
+  2.3.1.3 Set the 'ntp trusted-key':Compliant
+  2.3.1.4 Set key' for each 'ntp server':Compliant
+  2.3.2 Set 'ip address' for ntp server':Compliant
+
+2.4 Loopback Rules
+  2.4.1 Create a single 'interface loopback':Compliant 
+  2.4.2 Set AAA 'source-interface':Compliant 
+  2.4.3 Set 'ntp source' to Loopback Interface:Compliant
+  2.4.4 Set 'ip tftp source-interface' to the Loopback interface:Compliant
+
+
+3 Data Plane
+3.1 Routing Rules
+  3.1.1 Set 'no ip source-route':Compliant
+  3.1.2 Set 'no ip proxy-arp':Compliant
+  3.1.3 Set 'no interface tunnel':Compliant
+  3.1.4 Set 'ip verify unicast source reachable-via':Compliant
+
+3.2 Border Router Filtering
+  3.2.1 Set 'ip access-list extended' to Forbid Private Source Addresses from 
+  External Networks:Non-Compliant
+  3.2.2 Set inbound 'ip access-group" on the External Interface:Non-Compliant
+
+3.3 Neighbor Authentication
+ 3.3.1 Require EIGRP Authentication if protocol is used
+  3.3.1.1 Set 'key chain':Compliant
+  3.3.1.2 Set 'key':Compliant
+  3.3.1.3 Set 'key-string' :Compliant
+  3.3.1.4 Set 'address-family ipv4 autonomous-system':Compliant
+  3.3.1.5 Set 'af-interfacer default':Compliant
+  3.3.1.6 Set 'authentication key-chain':Compliant
+  3.3.1.7 Set 'authentication mode md5':Compliant
+  3.3.1.8 Set 'ip authentication key-chain eigrp':Compliant
+  3.3.1.9 set 'ip authentication mode eigrp':Compliant
+
+3.3.2 Require OSPF Authentication if Protocol is used
+  3.3.2.1 Set 'authentication message-digest' for OSPF area:Compliant
+  3.3.2.2 Set 'ip ospf message-digest-key md5:Compliant
+
+3.3.3 Require RIPv2 Authentication if Protocol is used
+  3.3.3.1 Set 'key chain':Compliant
+  3.3.3.2 Set 'key':Compliant
+  3.3.3.3 Set 'key-string':Compliant 
+  3.3.3.4 Set 'ip rip authentication key-chain':Compliant
+  3.3.3.5 Set 'ip rip authentication mode' to 'md5":Compliant
+  
