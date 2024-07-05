@@ -9,19 +9,21 @@
   set_fact:
     privilege_user_score: "{{ 0 if 'username' in user_privilege_output.stdout[0] else 1 }}"
 
-- name: Register output of 'show running-config | include transport input'
+- name: Retrieve VTY configuration
   cisco.ios.ios_command:
-    commands: 
-      show running-config | include transport input ssh
-  register: config_output
+    commands:
+      - show running-config | section vty
+  register: vty_config_output
 
-- name: Set the transport input lines as facts 
-  set_fact: 
-    transport_input_lines: "{{ config_output.stdout_lines | flatten }}" 
+- name: Set VTY transport input score
+  set_fact:
+    vty_transport_input_score: "{{ 1 if vty_config_output.stdout[0] | regex_search('transport input ssh') else 0 }}"
 
-- name: Score 1.2.2 Set 'transport input ssh' for 'line vty' connections 
-  set_fact: 
-    ssh_score: "{{ 1 if transport_input_lines[0] else 0 }}"
+- name: Register output of 'show running-config | include aaa new-model'
+  cisco.ios.ios_command:
+    commands:
+      - show running-config | include aaa new-model
+  register: aaa_new_model_output
 
 - name: Register output of 'show running-config | section aux'
   cisco.ios.ios_command: 

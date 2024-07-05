@@ -1,5 +1,5 @@
 CIS Benchmark 4.1.1 Audit Report for R3 
-Audit file was created on: 2024-07-04 at 12:25:40.
+Audit file was created on: 2024-07-05 at 16:13:00.
 
 1. Detailed Results
 --------------------
@@ -18,7 +18,7 @@ Audit file was created on: 2024-07-04 at 12:25:40.
 
 1.2 Access Rules
   1.2.1 Set 'privilege 1' for local users:Compliant
-  1.2.2 Set 'transport input ssh' for 'line vty' connections:Non-Compliant
+  1.2.2 Set 'transport input ssh' for 'line vty' connections:Compliant
   1.2.3 Set 'no exec' for 'line aux 0':Compliant
   1.2.4 Create access-list for use with 'line vty':Compliant
   1.2.5 Set 'access-class' for 'line vty':Compliant
@@ -43,11 +43,11 @@ Audit file was created on: 2024-07-04 at 12:25:40.
   1.5.2 Unset 'private' for 'snmp-server community':Compliant
   1.5.3 Unset 'public' for 'snmp-server community':Compliant
   1.5.4 Do not set 'rw' for any 'snmp-server community':Compliant
-  1.5.5 Set the AGL for each 'snmp-server community':Compliant
+  1.5.5 Set the AGL for each 'snmp-server community':Not Audited
   1.5.6 Create an 'access-list' for use with SNMP:Not Audited
-  1.5.7 Set 'snmp-server host' when using SNMP:Not Audited
+  1.5.7 Set 'snmp-server host' when using SNMP:Compliant
   1.5.8 Set 'snmp-server enable traps snmp':Compliant
-  1.5.9 Set 'priv' for each 'snmp-server group' using SNMPv3:Non-Compliant
+  1.5.9 Set 'priv' for each 'snmp-server group' using SNMPv3:Compliant
   1.5.10 Require 'aes 128' as minimum for 'snmp-server user' when using SNMPv3:Compliant
 
 2 Control Plane. 

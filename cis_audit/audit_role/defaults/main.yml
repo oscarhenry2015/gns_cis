@@ -10,6 +10,11 @@ timeout_config:
     - line vty 0 4
     - line vty 5 15
 
+snmp_hosts:
+  - 192.168.1.1
+  - 192.168.1.2
+  - 192.168.1.3
+
 snmp_groups: 
   - v3group 
 #  - v3group2 

@@ -94,7 +94,7 @@
 
           1.2 Access Rules
             1.2.1 Set 'privilege 1' for local users:{{'Compliant' if privilege_user_score== "1" else 'Non-Compliant'}}
-            1.2.2 Set 'transport input ssh' for 'line vty' connections:{{'Compliant' if 'ssh_score'== "1" else 'Non-Compliant'}}
+            1.2.2 Set 'transport input ssh' for 'line vty' connections:{{'Compliant' if vty_transport_input_score == "1" else 'Non-Compliant'}}
             1.2.3 Set 'no exec' for 'line aux 0':{{'Compliant' if no_exec_score == "1" else 'Non-Compliant'}}
             1.2.4 Create access-list for use with 'line vty':{{'Compliant' if vty_acl_score == "1" else 'Non-Compliant'}}
             1.2.5 Set 'access-class' for 'line vty':{{'Compliant' if vty_access_score == "1" else 'Non-Compliant'}}
@@ -119,9 +119,9 @@
             1.5.2 Unset 'private' for 'snmp-server community':{{'Compliant' if snmp_private_community_score == "1" else 'Non-Compliant'}}
             1.5.3 Unset 'public' for 'snmp-server community':{{'Compliant' if snmp_public_community_score == "1" else 'Non-Compliant'}}
             1.5.4 Do not set 'rw' for any 'snmp-server community':{{'Compliant' if snmp_rw_community_score == "1" else 'Non-Compliant'}}
-            1.5.5 Set the AGL for each 'snmp-server community':{{'Compliant' if snmp_server_score == "1" else 'Non-Compliant'}}
+            1.5.5 Set the AGL for each 'snmp-server community':{{'Not Audited'}}
             1.5.6 Create an 'access-list' for use with SNMP:{{'Not Audited'}}
-            1.5.7 Set 'snmp-server host' when using SNMP:{{'Not Audited'}}
+            1.5.7 Set 'snmp-server host' when using SNMP:{{'Compliant' if snmp_server_host_score== "1" else 'Non-Compliant'}}
             1.5.8 Set 'snmp-server enable traps snmp':{{'Compliant' if snmp_traps_enabled_score == "1" else 'Non-Compliant'}}
             1.5.9 Set 'priv' for each 'snmp-server group' using SNMPv3:{{'Compliant' if snmp_group_score == "1" else 'Non-Compliant'}}
             1.5.10 Require 'aes 128' as minimum for 'snmp-server user' when using SNMPv3:{{'Compliant' if snmp_user_score == "1" else 'Non-Compliant'}}

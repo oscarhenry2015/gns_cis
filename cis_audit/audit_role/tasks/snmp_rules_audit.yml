@@ -34,15 +34,22 @@
         else 1
       }}
 
+- name: Register output of show running-config | include snmp-server host
+  cisco.ios.ios_command:
+    commands:
+      - show running-config | include snmp-server host {{ item }}
+  loop: "{{ snmp_hosts }}"
+  register: snmp_trap_config_outputs
+
+- name: Score 1.5.7 Set 'snmp-server host' when using SNMP
+  set_fact:
+    snmp_server_host_score: "{{ 1 if snmp_trap_config_outputs.results | selectattr('stdout', 'equalto', '') | list | length == 0 else 0 }}"
+
 - name: Register output of 'show run | incl snmp-server'
   cisco.ios.ios_command:
     commands:
       - show run | incl snmp-server
   register: snmp_traps_output
-
-- name: Score 1.5.7 Set 'snmp-server host' when using SNMP
-  set_fact:
-    snmp_server_score: "{{ 1 if 'snmp-server host' in snmp_traps_output.stdout[0] else 0 }}"
 
 - name: 1.5.8 Set 'snmp-server enable traps snmp'
   set_fact:
@@ -52,20 +59,16 @@
         else 0
        }}
 
-- name: Register output for 'show snmp group' 
-  cisco.ios.ios_command: 
-    commands: 
-      - show snmp group | inc "{{ item }}"
-  loop: "{{ snmp_groups }}" 
-  register: snmp_group_outputs 
+- name: Register output for 'show snmp group'
+  cisco.ios.ios_command:
+    commands:
+      - show snmp group | incl {{item}}                          security model:v3 priv
+  loop: "{{ snmp_groups }}"
+  register: snmp_group_output
 
 - name: Score 1.5.9 Set 'priv' for each 'snmp-server group' using SNMPv3
   set_fact:
-    snmp_group_score: >-
-      {{
-        0 if snmp_group_outputs.results | selectattr('stdout', 'search', 'security model:v3 priv') | list | length < snmp_groups | length 
-        else 1
-      }}
+    snmp_group_score: "{{ 1 if snmp_group_output != '' else 0 }}"
 
 - name: Register output of 'show snmp user'
   cisco.ios.ios_command:
