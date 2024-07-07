@@ -34,6 +34,26 @@
         else 1
       }}
 
+- name: Register output of show run | include snmp-server community 
+  cisco.ios.ios_command:
+    commands:
+      - show run | include snmp-server community {{community_string}}
+  register: snmp_acl_output
+
+- name: Score 1.5.5 Set the ACL for each 'snmp-server community' 
+  set_fact:
+    snmp_server_community_score: "{{ 1 if snmp_acl_output.stdout[0] != '' else 0 }}"
+
+- name: Register output of show ip access-list 
+  cisco.ios.ios_command:
+    commands:
+      - show ip access-list {{snmp_acl_number}}
+  register: snmp_acl_output
+
+- name: Score 1.5.6 Create an 'access-list' for use with SNMP
+  set_fact:
+    snmp_acl_score: "{{ 1 if snmp_acl_output.stdout[0] != '' else 0 }}"
+
 - name: Register output of show running-config | include snmp-server host
   cisco.ios.ios_command:
     commands:

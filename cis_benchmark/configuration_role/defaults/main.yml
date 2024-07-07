@@ -54,6 +54,15 @@ snmp_hosts:
   - ip_address: "192.168.1.2"
   - ip_address: "192.168.1.3"
 
+community_string: "your_community_string"
+snmp_acl_number: "snmp_acl_number"
+    
+snmp_acl_number: "59"
+snmp_access_hosts:
+  - "192.168.1.100"
+  - "192.168.1.101"
+
+
 ios_devices:
   R3:
     hostname: R3

@@ -18,18 +18,24 @@
   loop: "{{ snmp_write_community_strings }}"
   when: snmp_write_community_strings is defined
 
-- name: 1.5.5 Set the ACL for each 'snmp-server community [1 point]'
+- name: 1.5.5 Set the ACL for each 'snmp-server community' 
   cisco.ios.ios_config:
-    lines: 
-      - "snmp-server community {{ item.name }} ro {{ item.access_list }}"
-  loop: "{{ snmp_community_strings }}"
+    lines:
+      - "snmp-server community {{ community_string }} ro {{ snmp_acl_number }}"
+  when: community_string is defined and snmp_acl_number is defined
 
-#- name: 1.5.6 Create an 'access-list' for use with SNMP [1 point]
-#  cisco.ios.ios_config:
-#    lines: 
-#      - "ip access-list standard snmp_access_list"
-#      - "permit {{ item }}"
-#  loop: "{{ snmp_access_list }}"
+- name: 1.5.6 Create an 'access-list' for use with SNMP
+  cisco.ios.ios_config:
+    lines:
+      - "access-list {{ snmp_acl_number }} permit host {{ item }} log"
+  loop: "{{ snmp_access_hosts }}"
+  when: snmp_acl_number is defined and snmp_access_hosts is defined
+
+- name: Deny all other traffic and log
+  cisco.ios.ios_config:
+    lines:
+      - "access-list {{ snmp_acl_number }} deny any log"
+  when: snmp_acl_number is defined
 
 - name: 1.5.7 Set 'snmp-server host' when using SNMP [1 point]
   cisco.ios.ios_config:

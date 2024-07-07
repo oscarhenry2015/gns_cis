@@ -15,6 +15,27 @@
     ansible_become_pass: "{{enable_secret}}"
 
   tasks:
+
+    - name: Retrieve SNMP community ACL configuration
+      cisco.ios.ios_command:
+        commands:
+          - show run | include snmp-server community {{community_string}}
+      register: snmp_acl_output
+
+    - name: Set SNMP ACL score
+      set_fact:
+        snmp_server_community_score: "{{ 1 if snmp_acl_output.stdout[0] != '' else 0 }}"
+
+    - name: Retrieve SNMP ACL configuration
+      cisco.ios.ios_command:
+        commands:
+          - show ip access-list {{snmp_acl_number}}
+      register: snmp_acl_output
+
+    - name: Set SNMP ACL score
+      set_fact:
+        snmp_acl_score: "{{ 1 if snmp_acl_output.stdout[0] != '' else 0 }}"
+
     - name: Audit AAA Rules Configurations
       include_tasks: /root/cis_audit/audit_role/tasks/aaa_audit.yml
 
@@ -119,8 +140,8 @@
             1.5.2 Unset 'private' for 'snmp-server community':{{'Compliant' if snmp_private_community_score == "1" else 'Non-Compliant'}}
             1.5.3 Unset 'public' for 'snmp-server community':{{'Compliant' if snmp_public_community_score == "1" else 'Non-Compliant'}}
             1.5.4 Do not set 'rw' for any 'snmp-server community':{{'Compliant' if snmp_rw_community_score == "1" else 'Non-Compliant'}}
-            1.5.5 Set the AGL for each 'snmp-server community':{{'Not Audited'}}
-            1.5.6 Create an 'access-list' for use with SNMP:{{'Not Audited'}}
+            1.5.5 Set the ACL for each 'snmp-server community':{{'Compliant' if snmp_server_community_score== "1" else 'Non-Compliant'}}
+            1.5.6 Create an 'access-list' for use with SNMP:{{'Compliant' if snmp_acl_score == "1" else 'Non-Compliant'}}
             1.5.7 Set 'snmp-server host' when using SNMP:{{'Compliant' if snmp_server_host_score== "1" else 'Non-Compliant'}}
             1.5.8 Set 'snmp-server enable traps snmp':{{'Compliant' if snmp_traps_enabled_score == "1" else 'Non-Compliant'}}
             1.5.9 Set 'priv' for each 'snmp-server group' using SNMPv3:{{'Compliant' if snmp_group_score == "1" else 'Non-Compliant'}}
