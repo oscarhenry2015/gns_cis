@@ -8,9 +8,6 @@
   roles:
     - role: /root/cis_audit/audit_role
 
-  vars_files:
-#    - /root/cis_audit/audit_role/vars/scores.yml
-
   vars:
     ansible_become_pass: "{{enable_secret}}"
 
@@ -56,6 +53,9 @@
 
     - name: Audit RIP Authentication Rules Configurations
       include_tasks: /root/cis_audit/audit_role/tasks/rip_authentication_playbook.yml
+
+    - name: Audit BGP Authentication Rules Configurations
+      include_tasks: /root/cis_audit/audit_role/tasks/bgp_audit_playbook.yml
 
     - name: Get current date
       command: date +%Y-%m-%d
@@ -200,7 +200,7 @@
             3.3.3.2 Set 'key':{{'Compliant' if key_number_score == "1" else 'Non-Compliant'}}
             3.3.3.3 Set 'key-string':{{'Compliant' if key_string_score == "1" else 'Non-Compliant'}} 
             3.3.3.4 Set 'ip rip authentication key-chain':{{'Compliant' if rip_authentication_key_chain_score == "1" else 'Non-Compliant'}}
-            3.3.3.5 Set 'ip rip authentication mode' to 'md5":{{'Compliant' if authentication_mode_score == "1" else 'Non-Compliant'}}
+            3.3.3.5 Set 'ip rip authentication mode' to 'md5':{{'Compliant' if authentication_mode_score == "1" else 'Non-Compliant'}}
             
           3.3.4 Require BGP Authentication if Protocol is Used
-            3.3.4.1 Set 'neighbor password':{{'Not Audited'}}
+            3.3.4.1 Set 'neighbor password':{{'Compliant' if bgp_neighbor_password_score == "1" else 'Non-Compliant'}}

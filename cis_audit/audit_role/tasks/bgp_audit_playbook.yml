@@ -5,7 +5,6 @@
       - "show run | sec router bgp"
   register: bgp_config_output
 
-- name: Debug BGP configuration output
-  debug:
-    var: bgp_config_output.stdout
-
+- name: Set BGP neighbor password score
+  set_fact:
+    bgp_neighbor_password_score: "{{ 1 if 'password' in (bgp_config_output.stdout[0] | default('')) else 0 }}"

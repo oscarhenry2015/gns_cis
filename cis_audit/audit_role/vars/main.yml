@@ -22,3 +22,4 @@ authentication_key_chain_name: EIGRP_KEY_CHAIN
 
 ripv2_key_chain_name: RIPv2_KEY_CHAINA
 
+bgp_neighbor_password: neighbor_password

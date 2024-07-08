@@ -1,0 +1,5 @@
+---
+bgp_neighbors:
+  - neighbor_ip: "192.168.23.2"
+    password: neighbor_password
+

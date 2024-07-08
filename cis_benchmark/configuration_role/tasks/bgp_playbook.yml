@@ -2,7 +2,9 @@
 - name: Configure BGP neighbor remote-as
   cisco.ios.ios_config:
     lines:
-      - "neighbor {{ item.ip }} remote-as {{item.remote_as_number}}"
+      - "neighbor {{item.peer_group_name}} peer-group"
+      - "neighbor {{item.peer_group_name}} remote-as {{item.remote_as_number}}"
+      - "neighbor {{ item.neighbor_ip }} peer-group {{item.peer_group_name}}"
     parents: "router bgp {{item.bgp_as_number}}"
   with_items: "{{ bgp_neighbors }}"
   register: bgp_remote_as_config
@@ -10,12 +12,8 @@
 - name: Configure BGP neighbor authentication
   cisco.ios.ios_config:
     lines:
-      - neighbor {{ item.ip }} password {{item.password }}
+      - neighbor {{ item.neighbor_ip }} password {{item.password }}
     parents: router bgp {{ item.bgp_as_number }}
   with_items: "{{ bgp_neighbors }}"
   register: bgp_config_output
-
-- name: Debug BGP configuration output
-  debug:
-    var: bgp_config_output
 

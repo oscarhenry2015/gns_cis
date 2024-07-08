@@ -1,7 +1,7 @@
-bgp_as_number: 65001
 bgp_neighbors:
-  - ip: "192.168.23.2"
-    remote_as_number: 65003    
+  - neighbor_ip: "192.168.23.1"
+    peer_group_name: "your-peer-group-name"
     password: "neighbor_password"
-    bgp_as_number: "1"
+    bgp_as_number: "65003"
+    remote_as_number: "65002"
 
