@@ -4,6 +4,7 @@
     lines:
       - "username {{ item.username }} privilege 1 secret {{ item.password }}"
   loop: "{{ local_users }}"
+  no_log: true
 
 - name: 1.2.2 Set 'transport input ssh' for 'line vty' connections [1 Point]
   cisco.ios.ios_config:

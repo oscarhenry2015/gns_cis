@@ -1,0 +1,5 @@
+bgp_neighbors:
+  - ip: "192.168.23.1"
+    remote_as_number: 65002
+    password: "neighbor_password"
+    bgp_as_number: 1

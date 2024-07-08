@@ -1,2 +1,111 @@
+# vars/secrets.yml
 ---
-# vars file for configuration_role
+enable_secret: class
+backup_user_name: backupuser
+backup_user_password: backupuser1234
+
+aaa_radius_config:
+  server_name: "myradiusserver"
+  server_ip: "192.168.122.102"
+  key: "gns3"
+  group_name: "myradiusgroup"
+  aaa_list_name: "default"  # or the name of your AAA list
+
+aaa_tacacs_config:
+  server_name: "mytacacsgui"
+  server_ip: "192.168.122.101"
+  key: "tacacskey"
+  group_name: "mytacacsguigroup"
+  aaa_list_name: "default"  # or the name of your AAA list
+
+aaa_group_name: mytacacsguigroup
+
+local_users:
+  - username: oscar
+    password: henry
+  - username: alice
+    password: gns3
+
+snmp_users:
+  - username: "user1"
+    auth_password: "auth_password1"
+  - username: "user2"
+    auth_password: "auth_password2"
+
+snmp_write_community_strings:
+  - "write_community_string1"
+  - "write_community_string2"
+  - "write_community_string3"
+
+snmp_community_strings:
+  - name: "community_string1"
+    access_list: "snmp_access_list"
+  - name: "community_string2"
+    access_list: "snmp_access_list"
+
+snmp_trap_community_string: "customCommunity"
+
+snmp_default_user:
+  group_name: "default_group"
+  auth_protocol: "sha"
+  auth_password: "default_auth_password"
+  priv_protocol: "aes"
+  priv_key_length: "128"
+  priv_password: "default_priv_password"
+  acl_name_or_number: "default_acl"
+
+snmpv3_users:
+  - name: "user1"                     # SNMPv3 user name
+    group: "v3group"                  # SNMPv3 group name
+    auth_protocol: "sha"              # Authentication protocol (sha or md5)
+    auth_password: "auth_password1"   # Authentication password
+    priv_password: "priv_password1"   # Privacy password
+    acl: "snmp_access_list"           # ACL name or number
+  - name: "user2"                     # SNMPv3 user name
+    group: "v3group"                  # SNMPv3 group name
+    auth_protocol: "sha"              # Authentication protocol (sha or md5)
+    auth_password: "auth_password2"   # Authentication password
+    priv_password: "priv_password2"   # Privacy password
+    acl: "snmp_access_list"
+
+ntp_key_id: 1
+ntp_key_hash: my_ntp_key_hash
+
+
+# Define internal networks for border router
+internal_networks:
+  - 192.168.2.0 0.0.0.255
+  - 192.168.23.0 0.0.0.255
+
+eigrp_instance: "EIGRP_INSTANCE"
+eigrp_vrf_name: EIGRP_VRF_NAME
+eigrp_as_number: 100
+eigrp_interfaces:
+  - name: "GigabitEthernet1/0"
+  - name: "GigabitEthernet2/0"
+
+eigrp_key_number: 1
+eigrp_key_string: "MySecretKeyString"
+eigrp_key_chain_name: "EIGRP_KEY_CHAIN"
+
+
+
+ospf_process_id: 1
+ospf_area_id: 0
+
+ospf_interfaces:
+  - name: "GigabitEthernet1/0"
+  - name: "GigabitEthernet2/0"
+
+ospf_md5_key_id: 1
+ospf_md5_key: my_secret_key
+
+
+
+ripv2_key_chain_name: "RIPv2_KEY_CHAINA"
+ripv2_key_number: 1
+
+ripv2_interfaces:
+  - name: "GigabitEthernet1/0"
+  - name: "GigabitEthernet2/0"
+

@@ -1,0 +1,11 @@
+---
+- name: Retrieve BGP configuration
+  cisco.ios.ios_command:
+    commands:
+      - "show run | sec router bgp"
+  register: bgp_config_output
+
+- name: Debug BGP configuration output
+  debug:
+    var: bgp_config_output.stdout
+

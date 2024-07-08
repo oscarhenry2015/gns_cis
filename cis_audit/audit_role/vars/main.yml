@@ -1,20 +1,24 @@
 ---
-# vars file for audit_role
-aaa_rules:
-  - name: Enable 'aaa new-model'
-    score: "{{ aaa_new_model_score }}"
+enable_secret: class
+community_string: your_community_string
 
-  - name: Enable 'aaa authentication login'
-    score: "{{ aaa_auth_login_score }}"
+ospf_interfaces:
+  - name: "GigabitEthernet1/0"
+  - name: "GigabitEthernet2/0"
 
-  - name: Enable 'aaa authentication enable default'
-    score: "{{ aaa_new_model_score }}"
-  # Add all other AAA rules here
 
-access_rules:
-  - name: Set 'privilege 1' for local users
-    score: "{{ privilege_user_score }}"
-  # Add all other Access rules here
+eigrp_interfaces:
+  - "GigabitEthernet1/0"
+  - "GigabitEthernet2/0"
 
-# Define banner_rules and password_rules similarly
+access_list_name: EXTERNAL_ACL
+external_interface: "GigabitEthernet3/0"
+
+key_chain_name: EIGRP_KEY_CHAIN
+key_number: 1
+key_string: 7
+eigrp_as_number: 100
+authentication_key_chain_name: EIGRP_KEY_CHAIN
+
+ripv2_key_chain_name: RIPv2_KEY_CHAINA
 

@@ -17,11 +17,8 @@ snmp_hosts:
 
 snmp_groups: 
   - v3group 
-#  - v3group2 
-#  - v3group3
 # Add more SNMP groups as needed
 
-community_string: your_community_string
 
 snmp_acl_number: 59
 
@@ -29,27 +26,6 @@ logging_hosts:
   - 192.168.1.100
   - 192.168.1.101
 
-ospf_interfaces:
-  - name: "GigabitEthernet1/0"
-  - name: "GigabitEthernet2/0"
-
-
-eigrp_interfaces:
-  - "GigabitEthernet1/0"
-  - "GigabitEthernet2/0"
-
-access_list_name: EXTERNAL_ACL
-external_interface: "GigabitEthernet3/0"
-
-key_chain_name: EIGRP_KEY_CHAIN
-key_number: 1
-key_string: 7
-eigrp_as_number: 100
-authentication_key_chain_name: EIGRP_KEY_CHAIN
-
-ripv2_key_chain_name: RIPv2_KEY_CHAINA
-
-total_score: 0
 aaa_auth_login_score: 0
 aaa_auth_enable_score: 0
 

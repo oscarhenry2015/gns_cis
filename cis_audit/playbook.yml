@@ -9,33 +9,12 @@
     - role: /root/cis_audit/audit_role
 
   vars_files:
-    - /root/cis_audit/audit_role/vars/scores.yml
+#    - /root/cis_audit/audit_role/vars/scores.yml
 
   vars:
     ansible_become_pass: "{{enable_secret}}"
 
   tasks:
-
-    - name: Retrieve SNMP community ACL configuration
-      cisco.ios.ios_command:
-        commands:
-          - show run | include snmp-server community {{community_string}}
-      register: snmp_acl_output
-
-    - name: Set SNMP ACL score
-      set_fact:
-        snmp_server_community_score: "{{ 1 if snmp_acl_output.stdout[0] != '' else 0 }}"
-
-    - name: Retrieve SNMP ACL configuration
-      cisco.ios.ios_command:
-        commands:
-          - show ip access-list {{snmp_acl_number}}
-      register: snmp_acl_output
-
-    - name: Set SNMP ACL score
-      set_fact:
-        snmp_acl_score: "{{ 1 if snmp_acl_output.stdout[0] != '' else 0 }}"
-
     - name: Audit AAA Rules Configurations
       include_tasks: /root/cis_audit/audit_role/tasks/aaa_audit.yml
 
@@ -223,5 +202,5 @@
             3.3.3.4 Set 'ip rip authentication key-chain':{{'Compliant' if rip_authentication_key_chain_score == "1" else 'Non-Compliant'}}
             3.3.3.5 Set 'ip rip authentication mode' to 'md5":{{'Compliant' if authentication_mode_score == "1" else 'Non-Compliant'}}
             
-#          3.3.4 Require BGP Authentication if Protocol is Used
-#            3.3.4.1 Set 'neighbor password':{{'Compliant' if key_number_score == "1" else 'Non-Compliant'}}
+          3.3.4 Require BGP Authentication if Protocol is Used
+            3.3.4.1 Set 'neighbor password':{{'Not Audited'}}
